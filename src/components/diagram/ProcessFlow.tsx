@@ -1,11 +1,13 @@
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
   Controls,
   Background,
-  Panel
+  Panel,
+  useReactFlow,
+  ReactFlowProvider
 } from 'reactflow';
 import type {
   Node,
@@ -58,6 +60,10 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [hasManualLayout, setHasManualLayout] = useState(false);
   const [showHappyPath, setShowHappyPath] = useState(false);
+
+  // Add missing refs for drag tracking
+  const isDragging = useRef(false);
+  const dragUpdateTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{
@@ -300,14 +306,22 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     );
   }, [showHappyPath, setNodes, setEdges]);
 
-  // Handle real-time node dragging for smooth movement
-  const onNodeDrag = useCallback(() => {
-    // This enables real-time position updates during drag
-    // No action needed here as onNodesChange handles the position updates
+  // Simple node drag handler with debugging
+  const onNodeDrag = useCallback((event: any, node: any) => {
+    console.log('Node dragging:', node.id, 'position:', node.position);
+    isDragging.current = true;
   }, []);
 
   // Handle manual node position changes
   const onNodeDragStop = useCallback(() => {
+    isDragging.current = false;
+
+    // Clear any pending timer
+    if (dragUpdateTimer.current) {
+      clearTimeout(dragUpdateTimer.current);
+      dragUpdateTimer.current = null;
+    }
+
     if (variants && variants.length > 0) {
       const variantKey = variants.map(v => v.variant_id).sort().join(',');
       saveLayoutToSession(variantKey, nodes);
@@ -520,88 +534,116 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
 
   return (
     <div className="h-full">
+      <ReactFlowProvider>
+        <ProcessFlowInner
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeDrag={onNodeDrag}
+          onNodeDragStop={onNodeDragStop}
+          onNodeContextMenu={handleNodeContextMenu}
+          onEdgeContextMenu={handleEdgeContextMenu}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          contextMenu={contextMenu}
+          contextMenuItems={contextMenuItems}
+          onCloseContextMenu={handleCloseContextMenu}
+        />
+      </ReactFlowProvider>
+    </div>
+  );
+};
+
+// Inner component that uses ReactFlow hooks
+const ProcessFlowInner: React.FC<{
+  nodes: any[];
+  edges: any[];
+  onNodesChange: any;
+  onEdgesChange: any;
+  onConnect: any;
+  onNodeDrag: any;
+  onNodeDragStop: any;
+  onNodeContextMenu: any;
+  onEdgeContextMenu: any;
+  nodeTypes: any;
+  edgeTypes: any;
+  contextMenu: any;
+  contextMenuItems: any;
+  onCloseContextMenu: any;
+}> = ({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onConnect,
+  onNodeDrag,
+  onNodeDragStop,
+  onNodeContextMenu,
+  onEdgeContextMenu,
+  nodeTypes,
+  edgeTypes,
+  contextMenu,
+  contextMenuItems,
+  onCloseContextMenu
+}) => {
+  const reactFlowInstance = useReactFlow();
+
+  // Enhanced node drag handler with immediate edge updates
+  const handleNodeDrag = useCallback((event: any, node: any) => {
+    // Call original handler
+    onNodeDrag(event, node);
+
+    // Force immediate edge re-calculation
+    requestAnimationFrame(() => {
+      reactFlowInstance.fitView({ duration: 0 });
+    });
+  }, [onNodeDrag, reactFlowInstance]);
+  return (
+    <>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onNodeDrag={onNodeDrag}
+        onNodeDrag={handleNodeDrag}
         onNodeDragStop={onNodeDragStop}
-        onNodeContextMenu={handleNodeContextMenu}
-        onEdgeContextMenu={handleEdgeContextMenu}
+        onNodeContextMenu={onNodeContextMenu}
+        onEdgeContextMenu={onEdgeContextMenu}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
-        attributionPosition="bottom-left"
+        fitViewOptions={{
+          padding: 0.1,
+          includeHiddenNodes: false,
+          minZoom: 0.5,
+          maxZoom: 1.5
+        }}
+        proOptions={{ hideAttribution: true }}
         className="bg-white"
+        nodesDraggable={true}
+        nodesConnectable={false}
+        elementsSelectable={true}
+        selectNodesOnDrag={false}
+        snapToGrid={false}
+        snapGrid={[15, 15]}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+        elevateNodesOnSelect={true}
+        elevateEdgesOnSelect={true}
       >
         {/* Clean white background */}
         <Background color="#fafafa" gap={20} size={0.3} />
-
-        {/* Modern controls with design guide styling */}
-        <Controls className="bg-white/95 shadow border border-zinc-200 rounded" />
-
-
-        {/* Happy Path Toggle - Top Left */}
-        <div
-          style={{
-            position: 'fixed',
-            top: '20px',
-            left: '20px',
-            zIndex: 9999
-          }}
-        >
-          <label
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '12px',
-              backgroundColor: 'white',
-              border: '2px solid #d1d5db',
-              borderRadius: '12px',
-              padding: '12px 16px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#374151',
-              boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-              transition: 'all 0.2s'
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={showHappyPath}
-              onChange={(e) => setShowHappyPath(e.target.checked)}
-              style={{
-                width: '16px',
-                height: '16px',
-                accentColor: '#22c55e'
-              }}
-            />
-            <span>Show Happy Path</span>
-          </label>
-        </div>
-
-
       </ReactFlow>
-
-      {/* Variant Selection Panel */}
-      <VariantSelectionPanel
-        variants={allVariants}
-        selectedVariants={selectedVariants}
-        onVariantSelect={onVariantSelect}
-        showHappyPath={showHappyPath}
-        onHappyPathToggle={setShowHappyPath}
-      />
 
       {/* Context Menu */}
       <ContextMenu
         isVisible={contextMenu.isVisible}
         position={contextMenu.position}
         items={contextMenuItems}
-        onClose={handleCloseContextMenu}
+        onClose={onCloseContextMenu}
       />
-    </div>
+    </>
   );
 };
