@@ -10,6 +10,7 @@ import { identifyBottlenecks } from './utils/metricsCalculator';
 function App() {
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
+  const [showHappyPath, setShowHappyPath] = useState(false);
 
   // Fixed dataset - generated once on app load
   const eventLog = useMemo(() => {
@@ -43,10 +44,16 @@ function App() {
     console.log('App: Setting variants, extractedVariants.length =', extractedVariants.length);
     setVariants(extractedVariants);
 
-    // Auto-select first variant if available
+    // Auto-select first non-happy-path variant if available
     if (extractedVariants.length > 0) {
-      console.log('Auto-selecting variant:', extractedVariants[0].variant_id);
-      setSelectedVariants([extractedVariants[0].variant_id]);
+      const nonHappyPathVariant = extractedVariants.find(v => v.variant_id !== 'happy_path');
+      if (nonHappyPathVariant) {
+        console.log('Auto-selecting variant:', nonHappyPathVariant.variant_id);
+        setSelectedVariants([nonHappyPathVariant.variant_id]);
+      } else {
+        console.log('No non-happy-path variants found');
+        setSelectedVariants([]);
+      }
     } else {
       console.log('No variants found to auto-select');
       setSelectedVariants([]);
@@ -98,42 +105,27 @@ function App() {
         <div className="w-full bg-gray-50 pt-12 pb-8">
           <div className="px-8" style={{ marginTop: '24px' }}>
             <div className="flex gap-6 items-start">
-              {/* Left side - Controls */}
-              <div className="flex flex-col gap-4 flex-shrink-0">
-                {/* Happy Path Toggle */}
+              {/* Left - Happy Path Toggle */}
+              <div className="flex-shrink-0">
                 <label
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '12px',
                     backgroundColor: 'white',
-                    border: '2px solid #d1d5db',
                     borderRadius: '12px',
                     padding: '12px 16px',
                     cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: '500',
                     color: '#374151',
-                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                     transition: 'all 0.2s'
                   }}
                 >
                   <input
                     type="checkbox"
-                    checked={selectedVariantData.some(v => v.variant_id === 'happy_path')}
-                    onChange={(e) => {
-                      // Toggle happy path variant selection
-                      if (e.target.checked) {
-                        const happyPathVariant = variants.find(v => v.variant_id === 'happy_path');
-                        if (happyPathVariant && !selectedVariants.includes('happy_path')) {
-                          handleVariantSelect('happy_path');
-                        }
-                      } else {
-                        if (selectedVariants.includes('happy_path')) {
-                          handleVariantSelect('happy_path');
-                        }
-                      }
-                    }}
+                    checked={showHappyPath}
+                    onChange={(e) => setShowHappyPath(e.target.checked)}
                     style={{
                       width: '16px',
                       height: '16px',
@@ -142,17 +134,33 @@ function App() {
                   />
                   <span>Show Happy Path</span>
                 </label>
+              </div>
 
-                {/* Variants Panel */}
+              {/* Center - Diagram */}
+              <div className="flex-1">
+                <div className="relative h-[65vh] bg-white rounded-lg shadow-sm overflow-hidden">
+            <ErrorBoundary>
+              <ProcessFlow
+                variant={selectedVariantData}
+                bottlenecks={bottlenecks}
+                variants={variants}
+                selectedVariants={selectedVariants}
+                onVariantSelect={handleVariantSelect}
+                showHappyPath={showHappyPath}
+              />
+                </ErrorBoundary>
+                </div>
+              </div>
+
+              {/* Right - Variants Panel */}
+              <div className="flex-shrink-0">
                 <div
                   style={{
                     backgroundColor: 'white',
-                    border: '2px solid #d1d5db',
                     borderRadius: '12px',
                     padding: '12px',
                     minWidth: '320px',
-                    maxWidth: '400px',
-                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    maxWidth: '400px'
                   }}
                 >
                   {/* Header */}
@@ -253,21 +261,6 @@ function App() {
                       })
                     )}
                   </div>
-                </div>
-              </div>
-
-              {/* Right side - Diagram */}
-              <div className="flex-1">
-                <div className="relative h-[65vh] bg-white rounded-lg shadow-sm overflow-hidden">
-            <ErrorBoundary>
-              <ProcessFlow
-                variant={selectedVariantData}
-                bottlenecks={bottlenecks}
-                variants={variants}
-                selectedVariants={selectedVariants}
-                onVariantSelect={handleVariantSelect}
-              />
-                </ErrorBoundary>
                 </div>
               </div>
             </div>

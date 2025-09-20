@@ -39,6 +39,7 @@ interface ProcessFlowProps {
   variants: Variant[];
   selectedVariants: string[];
   onVariantSelect: (variantId: string) => void;
+  showHappyPath: boolean;
 }
 
 const nodeTypes: NodeTypes = {
@@ -54,12 +55,12 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   bottlenecks,
   variants: allVariants,
   selectedVariants,
-  onVariantSelect
+  onVariantSelect,
+  showHappyPath
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [hasManualLayout, setHasManualLayout] = useState(false);
-  const [showHappyPath, setShowHappyPath] = useState(false);
 
   // Add missing refs for drag tracking
   const isDragging = useRef(false);
