@@ -78,6 +78,7 @@ export function applyDagreLayout(
   };
 }
 
+
 // Custom layout function optimized for process mining workflows
 function applyProcessMiningLayout(
   nodes: Node[],
@@ -105,9 +106,9 @@ function applyProcessMiningLayout(
     'request_additional_info': { x: 580, y: 650 }, // Move further right and down
     'applicant_provided_info': { x: 580, y: 800 }, // Move further right and down
     'health_inspection': { x: 300, y: 800 }, // Same position as final_review
-    'approved': { x: 200, y: 950 }, // More spacing for labels
-    'rejected': { x: 400, y: 950 }, // More spacing for labels
-    'withdrawn': { x: 600, y: 950 } // More spacing for labels
+    'approved': { x: 100, y: 950 }, // Final outcome after health_inspection
+    'rejected': { x: 400, y: 950 }, // Final outcome after health_inspection
+    'withdrawn': { x: 750, y: 800 } // Directly after request_additional_info, same level as applicant_provided_info
   };
 
   // Apply custom positions to nodes
@@ -125,8 +126,8 @@ function applyProcessMiningLayout(
     return {
       ...node,
       position: {
-        x: 300 + (index % 3) * 200,
-        y: 100 + Math.floor(index / 3) * 100
+        x: 400 + (index % 3) * 200,
+        y: 100 + Math.floor(index / 3) * 150
       }
     };
   });

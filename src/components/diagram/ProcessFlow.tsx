@@ -166,11 +166,55 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       // Check if this transition is part of the happy path
       const isHappyPath = happyPathTransitions.includes(transitionKey);
 
-      // Create single aggregated edge
+      // Smart handle selection to avoid edge crossings
+      let sourceHandle = 'bottom'; // Default: exit from bottom
+      let targetHandle = 'top';    // Default: enter from top
+
+      // Get node positions for smart routing (matching layoutUtils.ts)
+      const nodePositions: Record<string, { x: number; y: number }> = {
+        'submitted': { x: 300, y: 20 },
+        'intake_validation': { x: 300, y: 200 },
+        'assigned_to_reviewer': { x: 300, y: 350 },
+        'review_in_progress': { x: 300, y: 500 },
+        'request_additional_info': { x: 580, y: 650 },
+        'applicant_provided_info': { x: 580, y: 800 },
+        'health_inspection': { x: 300, y: 800 },
+        'approved': { x: 100, y: 950 }, // Final outcome after health_inspection
+        'rejected': { x: 400, y: 950 }, // Final outcome after health_inspection
+        'withdrawn': { x: 750, y: 800 } // Directly after request_additional_info, same level as applicant_provided_info
+      };
+
+      const sourcePos = nodePositions[transition.from];
+      const targetPos = nodePositions[transition.to];
+
+      if (sourcePos && targetPos) {
+        // Detect problematic edges: backward/horizontal flows with significant horizontal distance
+        const isBackwardOrHorizontal = sourcePos.y >= targetPos.y;
+        const hasLargeHorizontalDistance = Math.abs(sourcePos.x - targetPos.x) > 200;
+
+        if (isBackwardOrHorizontal && hasLargeHorizontalDistance) {
+          // Use side handles to route around main flow
+          if (sourcePos.x > targetPos.x) {
+            // Source is to the right of target - both use right side to curve around
+            sourceHandle = 'right';
+            targetHandle = 'right';
+          } else {
+            // Source is to the left of target - both use left side to curve around
+            sourceHandle = 'left';
+            targetHandle = 'left';
+          }
+        }
+      }
+
+      // All downward edges use bottom handles - let ReactFlow handle curve separation naturally
+
+      // Create single aggregated edge with smart handle selection
       variantEdges.push({
           id: transitionKey,
           source: transition.from,
           target: transition.to,
+          sourceHandle,
+          targetHandle,
           type: 'custom',
           animated: isBottleneck,
           data: {

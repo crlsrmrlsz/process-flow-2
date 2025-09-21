@@ -72,17 +72,76 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
         padding: '12px 16px'
       }}
     >
-      {/* Input handle (except for start nodes) */}
+      {/* Input handles (except for start nodes) */}
       {!isStart && (
-        <Handle
-          type="target"
-          position={Position.Top}
-          className="w-3 h-3 bg-white border-2 border-gray-500"
-          style={{
-            top: -6,
-            borderRadius: '50%'
-          }}
-        />
+        <>
+          <Handle
+            type="target"
+            position={Position.Top}
+            id="top"
+            className="w-3 h-3 bg-white border-2 border-gray-500"
+            style={{
+              top: -6,
+              borderRadius: '50%'
+            }}
+          />
+          <Handle
+            type="target"
+            position={Position.Left}
+            id="left"
+            className="w-3 h-3 bg-white border-2 border-gray-500"
+            style={{
+              left: -6,
+              borderRadius: '50%'
+            }}
+          />
+          <Handle
+            type="target"
+            position={Position.Right}
+            id="right"
+            className="w-3 h-3 bg-white border-2 border-gray-500"
+            style={{
+              right: -6,
+              borderRadius: '50%'
+            }}
+          />
+        </>
+      )}
+
+      {/* Output handles (except for end nodes) */}
+      {!isEnd && (
+        <>
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id="bottom"
+            className="w-3 h-3 bg-white border-2 border-gray-500"
+            style={{
+              bottom: -6,
+              borderRadius: '50%'
+            }}
+          />
+          <Handle
+            type="source"
+            position={Position.Left}
+            id="left"
+            className="w-3 h-3 bg-white border-2 border-gray-500"
+            style={{
+              left: -6,
+              borderRadius: '50%'
+            }}
+          />
+          <Handle
+            type="source"
+            position={Position.Right}
+            id="right"
+            className="w-3 h-3 bg-white border-2 border-gray-500"
+            style={{
+              right: -6,
+              borderRadius: '50%'
+            }}
+          />
+        </>
       )}
 
       {/* Node content */}
@@ -94,19 +153,6 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
           {count.toLocaleString()}
         </div>
       </div>
-
-      {/* Output handle (except for end nodes) */}
-      {!isEnd && (
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          className="w-3 h-3 bg-white border-2 border-gray-500"
-          style={{
-            bottom: -6,
-            borderRadius: '50%'
-          }}
-        />
-      )}
 
       {/* Total time label for final nodes */}
       {isFinalNode && (
