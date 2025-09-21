@@ -202,6 +202,7 @@ function App() {
                 </div>
               </div>
 
+
               {/* Variants Panel - Top Right Overlay */}
               <div style={{
                 position: 'absolute',
