@@ -41,4 +41,4 @@ npm run preview      # Preview production build
 - **Variants**: Unique activity sequences through the process (displayed by percentage)
 - **Happy Path**: Optimal process flow highlighted in green when toggled
 - **DFG**: Directly-follows graph with optimized edge routing
-- **Context Menu**: Right-click edges for "Split by Worker" functionality
+- commit every change in code with descriptive comment about the change

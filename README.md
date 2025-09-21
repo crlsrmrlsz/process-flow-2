@@ -136,11 +136,10 @@ npm run build
 
 ## Next Phase
 
-**Phase 4**: Context Menu Splitting (Split by → Worker)
-- Right-click context menus on process nodes
-- "Split by → Worker" hierarchical menu navigation
-- Per-performer edge breakdown with sub-edges
-- Worker comparison filtering and conservation validation
+**Phase 4**: Enhanced Process Analytics
+- Advanced filtering and comparison tools
+- Enhanced performer analytics and insights
+- Additional process optimization features
 
 ## Technical Stack
 

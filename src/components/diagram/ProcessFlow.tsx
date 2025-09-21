@@ -22,7 +22,6 @@ import { CustomNode } from './CustomNode';
 import { CustomEdge } from './CustomEdge';
 import type { CustomNodeData } from './CustomNode';
 import type { CustomEdgeData } from './CustomEdge';
-import { ContextMenu, type ContextMenuItem } from './ContextMenu';
 import type { Variant } from '../../types/Variant';
 import { applyDagreLayout, saveLayoutToSession, loadLayoutFromSession, detectOverlaps } from '../../utils/layoutUtils';
 import { aggregateVariants, type AggregatedVariant } from '../../utils/variantAggregator';
@@ -73,23 +72,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   // Drag sensitivity factor - makes nodes feel "heavier"
   const DRAG_SENSITIVITY = 0.7; // Reduce to 70% of normal speed
 
-  // Context menu state
-  const [contextMenu, setContextMenu] = useState<{
-    isVisible: boolean;
-    position: { x: number; y: number };
-    targetType: 'node' | 'edge' | null;
-    targetId: string | null;
-    targetData: any;
-  }>({
-    isVisible: false,
-    position: { x: 0, y: 0 },
-    targetType: null,
-    targetId: null,
-    targetData: null
-  });
 
-  // Track split transitions
-  const [splitTransitions, setSplitTransitions] = useState<Set<string>>(new Set());
 
   // Generate aggregated variant data
   const aggregatedVariant = useMemo(() => {
@@ -183,61 +166,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       // Check if this transition is part of the happy path
       const isHappyPath = happyPathTransitions.includes(transitionKey);
 
-      // Check if this transition is split by performer
-      if (splitTransitions.has(transitionKey) && transition.performer_breakdown) {
-        console.log(`Splitting transition ${transitionKey}:`, transition.performer_breakdown);
-
-        // Create separate edges for each performer
-        const performerEntries = Object.entries(transition.performer_breakdown);
-        performerEntries.forEach(([performer, perfData], index) => {
-          const performerColor = performerColors.get(performer) || '#6B7280';
-
-          console.log(`Creating edge for performer ${performer}:`, perfData);
-
-          // For multiple edges, use different sourceHandle/targetHandle positions
-          let sourceHandle = 'bottom';
-          let targetHandle = 'top';
-
-          // For multiple performers, spread them across different handle positions
-          if (performerEntries.length > 1) {
-            const handlePositions = ['bottom-a', 'bottom-b', 'bottom-c', 'bottom-d', 'bottom-e'];
-            const targetPositions = ['top-a', 'top-b', 'top-c', 'top-d', 'top-e'];
-            sourceHandle = handlePositions[index % handlePositions.length];
-            targetHandle = targetPositions[index % targetPositions.length];
-          }
-
-          variantEdges.push({
-            id: `${transitionKey}-${performer}`,
-            source: transition.from,
-            target: transition.to,
-            sourceHandle,
-            targetHandle,
-            type: 'custom',
-            animated: isBottleneck,
-            style: {
-              stroke: performerColor,
-              strokeWidth: 3
-            },
-            data: {
-              count: perfData.count,
-              medianTime: perfData.median_time_hours,
-              meanTime: perfData.mean_time_hours,
-              isBottleneck,
-              contributingVariants: transition.contributing_variants,
-              performer, // Add performer info for split edges
-              originalTransition: transitionKey,
-              performerIndex: index, // Store index for positioning
-              totalPerformers: performerEntries.length,
-              isHappyPath,
-              showHappyPath
-            }
-          });
-        });
-
-        console.log(`Created ${Object.keys(transition.performer_breakdown).length} edges for ${transitionKey}`);
-      } else {
-        // Create single aggregated edge
-        variantEdges.push({
+      // Create single aggregated edge
+      variantEdges.push({
           id: transitionKey,
           source: transition.from,
           target: transition.to,
@@ -253,15 +183,14 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
             isHappyPath,
             showHappyPath
           }
-        });
-      }
     });
+  });
 
     return {
       initialNodes: variantNodes,
       initialEdges: variantEdges
     };
-  }, [aggregatedVariant, bottlenecks, splitTransitions, performerColors]);
+  }, [aggregatedVariant, bottlenecks, performerColors]);
 
   // Apply layout when variant changes
   useEffect(() => {
@@ -430,171 +359,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     }
   }, [resetLayoutTrigger, doResetLayout]);
 
-  // Context menu handlers
-  const handleNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
-    event.preventDefault();
-    setContextMenu({
-      isVisible: true,
-      position: { x: event.clientX, y: event.clientY },
-      targetType: 'node',
-      targetId: node.id,
-      targetData: node.data
-    });
-  }, []);
 
-  const handleEdgeContextMenu = useCallback((event: React.MouseEvent, edge: Edge) => {
-    event.preventDefault();
-    setContextMenu({
-      isVisible: true,
-      position: { x: event.clientX, y: event.clientY },
-      targetType: 'edge',
-      targetId: edge.id,
-      targetData: edge.data
-    });
-  }, []);
 
-  const handleCloseContextMenu = useCallback(() => {
-    setContextMenu({
-      isVisible: false,
-      position: { x: 0, y: 0 },
-      targetType: null,
-      targetId: null,
-      targetData: null
-    });
-  }, []);
-
-  // Handle splitting by worker
-  const handleSplitByWorker = useCallback(() => {
-    if (contextMenu.targetType === 'edge' && contextMenu.targetId) {
-      const edgeId = contextMenu.targetId;
-      const edgeData = contextMenu.targetData as CustomEdgeData;
-
-      // Extract base transition key using the same logic as context menu
-      let baseTransitionKey = edgeId;
-
-      if (edgeData?.originalTransition) {
-        // This is a split edge, use the original transition key
-        baseTransitionKey = edgeData.originalTransition;
-      } else {
-        // This might be a regular edge, check if it has performer suffix
-        const hyphenCount = (edgeId.match(/-/g) || []).length;
-        if (hyphenCount >= 2) {
-          // Multiple hyphens suggest performer suffix
-          baseTransitionKey = edgeId.substring(0, edgeId.lastIndexOf('-'));
-        }
-      }
-
-      setSplitTransitions(prev => {
-        const newSet = new Set(prev);
-        if (newSet.has(baseTransitionKey)) {
-          // Un-split: remove from split set
-          newSet.delete(baseTransitionKey);
-        } else {
-          // Split: add to split set
-          newSet.add(baseTransitionKey);
-        }
-        return newSet;
-      });
-
-      console.log('Toggled worker split for transition:', baseTransitionKey);
-    }
-  }, [contextMenu]);
-
-  // Generate context menu items based on target
-  const contextMenuItems = useMemo((): ContextMenuItem[] => {
-    if (!contextMenu.isVisible) return [];
-
-    if (contextMenu.targetType === 'edge') {
-      const edgeData = contextMenu.targetData as CustomEdgeData;
-
-      // Debug logging
-      console.log('Context menu for edge:', contextMenu.targetId);
-      console.log('Edge data:', edgeData);
-      console.log('Performer breakdown:', edgeData?.performer_breakdown);
-
-      // Check if this transition is currently split
-      const edgeId = contextMenu.targetId || '';
-
-      // Extract base transition key: for "submitted-intake_validation-clerk_001" -> "submitted-intake_validation"
-      // For regular transitions like "submitted-intake_validation" -> keep as is
-      let baseTransitionKey = edgeId;
-
-      // If this is a split edge (has performer suffix), extract the base transition
-      if (edgeData?.originalTransition) {
-        // This is a split edge, use the original transition key
-        baseTransitionKey = edgeData.originalTransition;
-      } else {
-        // This might be a regular edge, check if it has performer suffix
-        // State names use underscores, edge separators use hyphens
-        // So "submitted-intake_validation-clerk_001" has base "submitted-intake_validation"
-        const hyphenCount = (edgeId.match(/-/g) || []).length;
-        if (hyphenCount >= 2) {
-          // Multiple hyphens suggest performer suffix
-          baseTransitionKey = edgeId.substring(0, edgeId.lastIndexOf('-'));
-        }
-      }
-
-      const isSplit = splitTransitions.has(baseTransitionKey);
-
-      // Determine if splitting is possible:
-      // 1. For regular edges: check if they have performer_breakdown
-      // 2. For split edges: always allow unsplitting
-      const hasPerformers = edgeData?.performer_breakdown &&
-        Object.keys(edgeData.performer_breakdown).length > 0;
-      const canSplit = hasPerformers || isSplit; // Allow unsplit even without performer_breakdown
-
-      console.log('Edge ID:', edgeId);
-      console.log('Base transition key:', baseTransitionKey);
-      console.log('Is split:', isSplit);
-      console.log('Has performers:', hasPerformers);
-      console.log('Can split:', canSplit);
-      console.log('Split transitions:', Array.from(splitTransitions));
-
-      return [
-        {
-          id: 'split-by-worker',
-          label: isSplit ? 'Unsplit Workers' : 'Split by Worker',
-          icon: isSplit ? '📊' : '👥',
-          disabled: !canSplit,
-          onClick: handleSplitByWorker
-        },
-        {
-          id: 'view-details',
-          label: 'View Details',
-          icon: '📊',
-          onClick: () => {
-            console.log('Edge details:', contextMenu.targetData);
-            // TODO: Implement details view
-          }
-        }
-      ];
-    }
-
-    if (contextMenu.targetType === 'node') {
-      return [
-        {
-          id: 'view-cases',
-          label: 'View Cases',
-          icon: '📋',
-          onClick: () => {
-            console.log('Node cases:', contextMenu.targetData);
-            // TODO: Implement cases view
-          }
-        },
-        {
-          id: 'highlight-path',
-          label: 'Highlight Path',
-          icon: '🔍',
-          onClick: () => {
-            console.log('Highlight path for:', contextMenu.targetId);
-            // TODO: Implement path highlighting
-          }
-        }
-      ];
-    }
-
-    return [];
-  }, [contextMenu, handleSplitByWorker, splitTransitions]);
 
   // Check for overlapping nodes
   const hasOverlaps = useMemo(() => detectOverlaps(nodes), [nodes]);
@@ -623,13 +389,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           onNodeDragStart={onNodeDragStart}
           onNodeDrag={onNodeDrag}
           onNodeDragStop={onNodeDragStop}
-          onNodeContextMenu={handleNodeContextMenu}
-          onEdgeContextMenu={handleEdgeContextMenu}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-          contextMenu={contextMenu}
-          contextMenuItems={contextMenuItems}
-          onCloseContextMenu={handleCloseContextMenu}
           fitViewRef={fitViewRef}
         />
       </ReactFlowProvider>
@@ -647,13 +408,8 @@ const ProcessFlowInner: React.FC<{
   onNodeDragStart: any;
   onNodeDrag: any;
   onNodeDragStop: any;
-  onNodeContextMenu: any;
-  onEdgeContextMenu: any;
   nodeTypes: any;
   edgeTypes: any;
-  contextMenu: any;
-  contextMenuItems: any;
-  onCloseContextMenu: any;
   fitViewRef: any;
 }> = ({
   nodes,
@@ -664,13 +420,8 @@ const ProcessFlowInner: React.FC<{
   onNodeDragStart,
   onNodeDrag,
   onNodeDragStop,
-  onNodeContextMenu,
-  onEdgeContextMenu,
   nodeTypes,
   edgeTypes,
-  contextMenu,
-  contextMenuItems,
-  onCloseContextMenu,
   fitViewRef
 }) => {
   const reactFlowInstance = useReactFlow();
@@ -735,8 +486,6 @@ const ProcessFlowInner: React.FC<{
         onNodeDragStart={onNodeDragStart}
         onNodeDrag={handleNodeDrag}
         onNodeDragStop={onNodeDragStop}
-        onNodeContextMenu={onNodeContextMenu}
-        onEdgeContextMenu={onEdgeContextMenu}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
@@ -762,13 +511,6 @@ const ProcessFlowInner: React.FC<{
         <Background color="#fafafa" gap={20} size={0.3} />
       </ReactFlow>
 
-      {/* Context Menu */}
-      <ContextMenu
-        isVisible={contextMenu.isVisible}
-        position={contextMenu.position}
-        items={contextMenuItems}
-        onClose={onCloseContextMenu}
-      />
     </>
   );
 };

@@ -88,7 +88,7 @@ function applyProcessMiningLayout(
   const permitNodes = [
     'submitted', 'intake_validation', 'assigned_to_reviewer',
     'review_in_progress', 'request_additional_info', 'applicant_provided_info',
-    'final_review', 'approved', 'rejected', 'withdrawn'
+    'health_inspection', 'approved', 'rejected', 'withdrawn'
   ];
 
   const nodeIds = nodes.map(n => n.id);
@@ -104,7 +104,7 @@ function applyProcessMiningLayout(
     'review_in_progress': { x: 300, y: 500 }, // More spacing for labels
     'request_additional_info': { x: 580, y: 650 }, // Move further right and down
     'applicant_provided_info': { x: 580, y: 800 }, // Move further right and down
-    'final_review': { x: 300, y: 800 }, // More spacing for labels
+    'health_inspection': { x: 300, y: 800 }, // Same position as final_review
     'approved': { x: 200, y: 950 }, // More spacing for labels
     'rejected': { x: 400, y: 950 }, // More spacing for labels
     'withdrawn': { x: 600, y: 950 } // More spacing for labels

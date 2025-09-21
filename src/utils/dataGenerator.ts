@@ -99,6 +99,8 @@ function generateCaseEvents(caseId: string, sequence: PermitState[], rng: Seeded
     if (HUMAN_STATES.includes(state)) {
       if (state === 'intake_validation') {
         performer = rng.choice([...PERFORMERS.clerks]);
+      } else if (state === 'health_inspection') {
+        performer = rng.choice([...PERFORMERS.health_inspectors]);
       } else {
         performer = rng.choice([...PERFORMERS.reviewers]);
       }

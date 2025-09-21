@@ -153,24 +153,7 @@ className="rounded-lg px-3 py-1.5 text-sm shadow-sm border transition-colors"
 <div className="px-2 py-0.5 rounded bg-white/95 border border-zinc-200 text-[11px] text-zinc-600 shadow">
 ```
 
-### 5. Context Menus
-
-**Main Menu Container:**
-```tsx
-className="min-w-[220px] rounded-sm border border-zinc-200 bg-white/98 shadow-sm p-1 text-xs text-zinc-800"
-```
-
-**Menu Items:**
-```tsx
-className="w-full text-left px-2 py-1 rounded-sm hover:bg-zinc-100"
-```
-
-**Submenu Pattern:**
-```tsx
-className="absolute left-[calc(100%+4px)] top-0 min-w-[200px] rounded-sm border border-zinc-200 bg-white/98 shadow-sm p-1 text-xs"
-```
-
-### 6. Legend Bar (Bottom Center)
+### 5. Legend Bar (Bottom Center)
 
 **Positioning Pattern:**
 ```tsx
@@ -204,12 +187,12 @@ className="flex items-center gap-4 px-3 py-1.5 rounded-md bg-white/95 border bor
 - **Top-left**: Controls (toggle buttons)
 - **Top-right**: Information panels (variants)
 - **Bottom-center**: Legend/status information
-- **Floating**: Context menus, tooltips
+- **Floating**: Tooltips and overlays
 
 ### 3. Z-Index Strategy
 ```css
 z-20: Overlay panels and controls
-z-50: Context menus and dropdowns
+z-50: Tooltips and floating elements
 ```
 
 ## Advanced Styling Techniques
