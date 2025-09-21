@@ -40,6 +40,7 @@ interface ProcessFlowProps {
   selectedVariants: string[];
   onVariantSelect: (variantId: string) => void;
   showHappyPath: boolean;
+  onResetLayout?: () => void;
 }
 
 const nodeTypes: NodeTypes = {
@@ -56,7 +57,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   variants: allVariants,
   selectedVariants,
   onVariantSelect,
-  showHappyPath
+  showHappyPath,
+  onResetLayout
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -65,6 +67,9 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   // Add missing refs for drag tracking
   const isDragging = useRef(false);
   const dragUpdateTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Drag sensitivity factor - makes nodes feel "heavier"
+  const DRAG_SENSITIVITY = 0.7; // Reduce to 70% of normal speed
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{
@@ -307,15 +312,51 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     );
   }, [showHappyPath, setNodes, setEdges]);
 
-  // Simple node drag handler with debugging
-  const onNodeDrag = useCallback((event: any, node: any) => {
-    console.log('Node dragging:', node.id, 'position:', node.position);
+  // Custom drag handler with reduced sensitivity for "heavier" feel
+  const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null);
+  const [nodeStartPos, setNodeStartPos] = useState<{ [nodeId: string]: { x: number; y: number } }>({});
+
+  const onNodeDragStart = useCallback((event: any, node: any) => {
     isDragging.current = true;
+    setLastMousePos({ x: event.clientX, y: event.clientY });
+    setNodeStartPos(prev => ({
+      ...prev,
+      [node.id]: { x: node.position.x, y: node.position.y }
+    }));
   }, []);
+
+  const onNodeDrag = useCallback((event: any, node: any) => {
+    if (!lastMousePos || !nodeStartPos[node.id]) return;
+
+    // Calculate mouse movement delta
+    const mouseDeltaX = event.clientX - lastMousePos.x;
+    const mouseDeltaY = event.clientY - lastMousePos.y;
+
+    // Apply sensitivity factor to make nodes feel heavier
+    const scaledDeltaX = mouseDeltaX * DRAG_SENSITIVITY;
+    const scaledDeltaY = mouseDeltaY * DRAG_SENSITIVITY;
+
+    // Calculate new position based on start position + scaled delta
+    const newX = nodeStartPos[node.id].x + scaledDeltaX;
+    const newY = nodeStartPos[node.id].y + scaledDeltaY;
+
+    // Update node position with reduced sensitivity
+    setNodes(currentNodes =>
+      currentNodes.map(n =>
+        n.id === node.id
+          ? { ...n, position: { x: newX, y: newY } }
+          : n
+      )
+    );
+  }, [lastMousePos, nodeStartPos, DRAG_SENSITIVITY, setNodes]);
 
   // Handle manual node position changes
   const onNodeDragStop = useCallback(() => {
     isDragging.current = false;
+
+    // Clear drag tracking state
+    setLastMousePos(null);
+    setNodeStartPos({});
 
     // Clear any pending timer
     if (dragUpdateTimer.current) {
@@ -349,8 +390,13 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
         const variantKey = variants.map(v => v.variant_id).sort().join(',');
         sessionStorage.removeItem(`process-flow-layout-${variantKey}`);
       }
+
+      // Call external callback if provided
+      if (onResetLayout) {
+        onResetLayout();
+      }
     }
-  }, [initialNodes, initialEdges, variants, setNodes, setEdges]);
+  }, [initialNodes, initialEdges, variants, setNodes, setEdges, onResetLayout]);
 
   // Context menu handlers
   const handleNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
@@ -542,6 +588,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeDragStart={onNodeDragStart}
           onNodeDrag={onNodeDrag}
           onNodeDragStop={onNodeDragStop}
           onNodeContextMenu={handleNodeContextMenu}
@@ -564,6 +611,7 @@ const ProcessFlowInner: React.FC<{
   onNodesChange: any;
   onEdgesChange: any;
   onConnect: any;
+  onNodeDragStart: any;
   onNodeDrag: any;
   onNodeDragStop: any;
   onNodeContextMenu: any;
@@ -579,6 +627,7 @@ const ProcessFlowInner: React.FC<{
   onNodesChange,
   onEdgesChange,
   onConnect,
+  onNodeDragStart,
   onNodeDrag,
   onNodeDragStop,
   onNodeContextMenu,
@@ -609,6 +658,7 @@ const ProcessFlowInner: React.FC<{
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeDragStart={onNodeDragStart}
         onNodeDrag={handleNodeDrag}
         onNodeDragStop={onNodeDragStop}
         onNodeContextMenu={onNodeContextMenu}
