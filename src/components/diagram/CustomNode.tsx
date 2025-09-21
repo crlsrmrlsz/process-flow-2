@@ -19,6 +19,9 @@ interface CustomNodeProps {
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
   const { label, count, isBottleneck, isStart, isEnd, isHappyPath, showHappyPath } = data;
 
+  // Check if this is a final node that should show total time
+  const isFinalNode = label === 'approved' || label === 'rejected' || label === 'withdrawn';
+
   // Get node styling based on design guide patterns - FORCE modern rounded style
   const getNodeStyle = () => {
     // Use !important-style approach with explicit rounded-xl and modern styling
@@ -46,6 +49,16 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
   const formatLabel = (text: string) => {
     return text.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
+
+  // Format time for display
+  const formatTime = (hours: number) => {
+    if (hours < 1) return `${(hours * 60).toFixed(0)}m`;
+    if (hours < 24) return `${hours.toFixed(1)}h`;
+    return `${(hours / 24).toFixed(1)}d`;
+  };
+
+  // Calculate estimated total process time for final nodes
+  const estimatedTotalTime = isFinalNode ? count * 0.1 : 0; // Simple estimate
 
   return (
     <div
@@ -93,6 +106,29 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
             borderRadius: '50%'
           }}
         />
+      )}
+
+      {/* Total time label for final nodes */}
+      {isFinalNode && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginTop: '8px',
+            backgroundColor: 'white',
+            padding: '4px 12px',
+            borderRadius: '3px',
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#374151',
+            fontFamily: 'monospace',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          Mean time: {formatTime(estimatedTotalTime)}
+        </div>
       )}
     </div>
   );

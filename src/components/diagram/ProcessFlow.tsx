@@ -285,6 +285,13 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     setNodes(layouted.nodes);
     setEdges(layouted.edges);
     setHasManualLayout(false);
+
+    // Fit view after layout is applied to ensure all nodes are visible
+    setTimeout(() => {
+      if (fitViewRef.current) {
+        fitViewRef.current();
+      }
+    }, 100);
   }, [initialNodes, initialEdges, variants, setNodes, setEdges]);
 
   // Update node and edge styles when showHappyPath changes (without changing positions)
@@ -668,16 +675,47 @@ const ProcessFlowInner: React.FC<{
 }) => {
   const reactFlowInstance = useReactFlow();
 
-  // Set up fitView function for parent component
+  // Set up custom fitView function that aligns top node with Happy Path button
   useEffect(() => {
     fitViewRef.current = () => {
-      reactFlowInstance.fitView({
-        padding: 0.3,
-        includeHiddenNodes: false,
-        minZoom: 0.5,
-        maxZoom: 1.5,
-        duration: 300
-      });
+      const nodes = reactFlowInstance.getNodes();
+      if (nodes.length === 0) return;
+
+      // Find the topmost node (first node in the flow)
+      const topNode = nodes.reduce((top, node) =>
+        node.position.y < top.position.y ? node : top
+      );
+
+      // Calculate bounds of all nodes including labels
+      const bounds = {
+        minX: Math.min(...nodes.map(n => n.position.x)),
+        maxX: Math.max(...nodes.map(n => n.position.x + (n.width || 150))),
+        minY: Math.min(...nodes.map(n => n.position.y)),
+        maxY: Math.max(...nodes.map(n => n.position.y + (n.height || 80) + 60)) // +60 for final node labels
+      };
+
+      const viewport = reactFlowInstance.getViewport();
+      const reactFlowBounds = document.querySelector('.react-flow')?.getBoundingClientRect();
+
+      if (!reactFlowBounds) return;
+
+      // Calculate zoom to fit content with padding
+      const contentWidth = bounds.maxX - bounds.minX;
+      const contentHeight = bounds.maxY - bounds.minY;
+      const padding = 40;
+
+      const zoomX = (reactFlowBounds.width - padding * 2) / contentWidth;
+      const zoomY = (reactFlowBounds.height - padding * 2) / contentHeight;
+      const zoom = Math.min(zoomX, zoomY, 1.5); // Cap at 1.5x
+
+      // Position so top node aligns with Happy Path button (around y=40)
+      const targetTopNodeY = 40;
+      const currentTopNodeY = topNode.position.y;
+
+      const x = reactFlowBounds.width / 2 - (bounds.minX + contentWidth / 2) * zoom;
+      const y = targetTopNodeY - currentTopNodeY * zoom;
+
+      reactFlowInstance.setViewport({ x, y, zoom }, { duration: 300 });
     };
   }, [reactFlowInstance, fitViewRef]);
 

@@ -108,7 +108,7 @@ function App() {
         </div>
 
         {/* Main Content Section - Full Width Diagram with Floating Controls */}
-        <div className="w-full bg-gray-50 pt-2 pb-8">
+        <div className="w-full bg-gray-50 pt-0 pb-8">
           <div className="px-8">
             {/* Main Container with Relative Positioning for Overlays */}
             <div className="relative">

@@ -76,16 +76,6 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
 
   const { count, medianTime, meanTime, isBottleneck, contributingVariants, performer, isHappyPath, showHappyPath } = data;
 
-  // Check if this edge leads to a final state
-  const isFinalEdge = id.includes('final_review-approved') ||
-                     id.includes('final_review-rejected') ||
-                     id.includes('final_review-withdrawn') ||
-                     id.includes('review_in_progress-rejected') ||
-                     id.includes('review_in_progress-withdrawn');
-
-  // Calculate approximate total process time for final edges
-  // This is a simplified calculation - in a real system you'd have actual case duration data
-  const estimatedTotalTime = isFinalEdge ? meanTime * 6 : 0; // Rough estimate multiplier
 
   // Clean edge styling following design guide
   const getStrokeWidth = () => {
@@ -151,34 +141,6 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
         </text>
       </g>
 
-      {/* Total process time label for final edges - positioned under target node */}
-      {isFinalEdge && (
-        <g transform={`translate(${targetX}, ${targetY + 40})`}>
-          {/* Clean background without border */}
-          <rect
-            x={-25}
-            y={-8}
-            width={50}
-            height={16}
-            rx={4}
-            fill="white"
-            className="drop-shadow-md"
-          />
-
-          {/* Total time label - larger and black */}
-          <text
-            x={0}
-            y={3}
-            textAnchor="middle"
-            fontSize={13}
-            fontWeight="700"
-            fill="#000000"
-            className="pointer-events-none font-mono"
-          >
-            Total: {formatTime(estimatedTotalTime)}
-          </text>
-        </g>
-      )}
 
       {/* Hover tooltip area (invisible but larger for better interaction) */}
       <path
