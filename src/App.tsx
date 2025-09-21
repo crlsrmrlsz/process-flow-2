@@ -159,8 +159,8 @@ function App() {
                     backgroundColor: 'white',
                     borderRadius: '12px',
                     padding: '12px',
-                    minWidth: '320px',
-                    maxWidth: '400px'
+                    minWidth: '240px',
+                    maxWidth: '280px'
                   }}
                 >
                   {/* Header */}
@@ -168,17 +168,15 @@ function App() {
                     fontSize: '14px',
                     fontWeight: 'bold',
                     color: '#374151',
-                    marginBottom: '8px',
-                    paddingBottom: '6px',
-                    borderBottom: '1px solid #e5e7eb'
+                    marginBottom: '12px'
                   }}>
                     Process Variants ({variants.length})
                   </div>
 
-                  {/* Variant List - Compact Single Line */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '160px', overflowY: 'auto' }}>
+                  {/* Variant List - Minimal Design */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                     {variants.length === 0 ? (
-                      <div style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', padding: '20px 0' }}>
+                      <div style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', padding: '16px 0' }}>
                         Loading variants...
                       </div>
                     ) : (
@@ -195,15 +193,14 @@ function App() {
                             style={{
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '8px',
-                              padding: '6px 8px',
-                              borderRadius: '6px',
-                              border: '1px solid #e5e7eb',
-                              backgroundColor: isSelected ? '#eff6ff' : '#f9fafb',
+                              gap: '6px',
+                              padding: '4px 6px',
+                              borderRadius: '4px',
+                              backgroundColor: isSelected ? '#eff6ff' : '#f8f9fa',
                               cursor: 'pointer',
                               transition: 'all 0.2s',
-                              fontSize: '12px',
-                              minHeight: '28px'
+                              fontSize: '11px',
+                              minHeight: '20px'
                             }}
                           >
                             {/* Number */}
@@ -211,10 +208,10 @@ function App() {
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              width: '18px',
-                              height: '18px',
-                              borderRadius: '3px',
-                              fontSize: '9px',
+                              width: '14px',
+                              height: '14px',
+                              borderRadius: '2px',
+                              fontSize: '8px',
                               fontWeight: 'bold',
                               backgroundColor: isSelected ? '#3b82f6' : '#d1d5db',
                               color: isSelected ? 'white' : '#374151',
@@ -240,21 +237,10 @@ function App() {
                               fontWeight: 'bold',
                               color: isSelected ? '#1e40af' : '#374151',
                               flexShrink: 0,
-                              minWidth: '35px',
+                              minWidth: '30px',
                               textAlign: 'right'
                             }}>
                               {percentage}%
-                            </div>
-
-                            {/* Cases */}
-                            <div style={{
-                              fontSize: '10px',
-                              color: '#6b7280',
-                              flexShrink: 0,
-                              minWidth: '40px',
-                              textAlign: 'right'
-                            }}>
-                              {variant.case_count.toLocaleString()}
                             </div>
                           </div>
                         );
