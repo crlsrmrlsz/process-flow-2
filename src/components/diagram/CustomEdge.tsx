@@ -74,19 +74,30 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
 
   if (!data) return null;
 
-  const { count, medianTime, isBottleneck, contributingVariants, performer, isHappyPath, showHappyPath } = data;
+  const { count, medianTime, meanTime, isBottleneck, contributingVariants, performer, isHappyPath, showHappyPath } = data;
+
+  // Check if this edge leads to a final state
+  const isFinalEdge = id.includes('final_review-approved') ||
+                     id.includes('final_review-rejected') ||
+                     id.includes('final_review-withdrawn') ||
+                     id.includes('review_in_progress-rejected') ||
+                     id.includes('review_in_progress-withdrawn');
+
+  // Calculate approximate total process time for final edges
+  // This is a simplified calculation - in a real system you'd have actual case duration data
+  const estimatedTotalTime = isFinalEdge ? meanTime * 6 : 0; // Rough estimate multiplier
 
   // Clean edge styling following design guide
   const getStrokeWidth = () => {
-    if (showHappyPath && isHappyPath) return 2; // Slightly thicker for happy path
-    return selected ? 2 : 1; // Thin, minimal width
+    if (showHappyPath && isHappyPath) return 3; // Slightly thicker for happy path
+    return selected ? 3 : 1.5; // Slightly wider for better visibility
   };
 
   // Design guide color scheme
   const getStrokeColor = () => {
     if (showHappyPath && isHappyPath) return '#4ade80'; // Green-400 for happy path
     if (selected) return '#4f46e5'; // Indigo-600 when selected
-    return '#e4e4e7'; // Zinc-200 default, very subtle
+    return '#9ca3af'; // Gray-400 default, more visible
   };
 
   const formatTime = (hours: number) => {
@@ -113,33 +124,58 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
         markerEnd="url(#react-flow__arrowclosed)"
       />
 
-      {/* Minimal label - only show count when selected */}
-      {selected && (
-        <g transform={`translate(${labelX + labelOffset.x}, ${labelY + labelOffset.y})`}>
-          {/* Clean background following design guide */}
+      {/* Mean time label - always visible, positioned further from edge */}
+      <g transform={`translate(${labelX + labelOffset.x + 25}, ${labelY + labelOffset.y - 15})`}>
+        {/* Clean background without border */}
+        <rect
+          x={-12}
+          y={-7}
+          width={24}
+          height={14}
+          rx={3}
+          fill="white"
+          className="drop-shadow-sm"
+        />
+
+        {/* Mean time label with larger font */}
+        <text
+          x={0}
+          y={2}
+          textAnchor="middle"
+          fontSize={11}
+          fontWeight="600"
+          fill="#374151"
+          className="pointer-events-none font-mono"
+        >
+          {formatTime(meanTime)}
+        </text>
+      </g>
+
+      {/* Total process time label for final edges - positioned under target node */}
+      {isFinalEdge && (
+        <g transform={`translate(${targetX}, ${targetY + 40})`}>
+          {/* Clean background without border */}
           <rect
-            x={-12}
+            x={-25}
             y={-8}
-            width={24}
+            width={50}
             height={16}
-            rx={2}
+            rx={4}
             fill="white"
-            stroke="#e4e4e7"
-            strokeWidth={1}
-            className="drop-shadow-sm"
+            className="drop-shadow-md"
           />
 
-          {/* Count label with design guide typography */}
+          {/* Total time label - larger and black */}
           <text
             x={0}
             y={3}
             textAnchor="middle"
-            fontSize={10}
-            fontWeight="500"
-            fill="#52525b"
+            fontSize={13}
+            fontWeight="700"
+            fill="#000000"
             className="pointer-events-none font-mono"
           >
-            {count}
+            Total: {formatTime(estimatedTotalTime)}
           </text>
         </g>
       )}

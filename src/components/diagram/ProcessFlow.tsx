@@ -41,6 +41,7 @@ interface ProcessFlowProps {
   onVariantSelect: (variantId: string) => void;
   showHappyPath: boolean;
   onResetLayout?: () => void;
+  resetLayoutTrigger?: number;
 }
 
 const nodeTypes: NodeTypes = {
@@ -58,7 +59,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   selectedVariants,
   onVariantSelect,
   showHappyPath,
-  onResetLayout
+  onResetLayout,
+  resetLayoutTrigger
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -377,8 +379,11 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     [setEdges]
   );
 
-  // Reset to automatic layout
-  const resetLayout = useCallback(() => {
+  // Ref to store fitView function from inner component
+  const fitViewRef = useRef<(() => void) | null>(null);
+
+  // Internal reset function without callback
+  const doResetLayout = useCallback(() => {
     if (initialNodes.length > 0) {
       const layouted = applyDagreLayout(initialNodes, initialEdges);
       setNodes(layouted.nodes);
@@ -391,12 +396,32 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
         sessionStorage.removeItem(`process-flow-layout-${variantKey}`);
       }
 
-      // Call external callback if provided
-      if (onResetLayout) {
-        onResetLayout();
-      }
+      // Fit view after layout reset
+      setTimeout(() => {
+        if (fitViewRef.current) {
+          fitViewRef.current();
+        }
+      }, 100); // Small delay to ensure nodes are rendered
     }
-  }, [initialNodes, initialEdges, variants, setNodes, setEdges, onResetLayout]);
+  }, [initialNodes, initialEdges, variants, setNodes, setEdges]);
+
+  // Reset to automatic layout (with callback for external use)
+  const resetLayout = useCallback(() => {
+    doResetLayout();
+
+    // Call external callback if provided
+    if (onResetLayout) {
+      onResetLayout();
+    }
+  }, [doResetLayout, onResetLayout]);
+
+  // Watch for reset layout trigger from parent
+  useEffect(() => {
+    if (resetLayoutTrigger && resetLayoutTrigger > 0) {
+      console.log('Reset layout triggered, calling internal reset function');
+      doResetLayout(); // Use internal function to avoid callback loop
+    }
+  }, [resetLayoutTrigger, doResetLayout]);
 
   // Context menu handlers
   const handleNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
@@ -598,6 +623,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           contextMenu={contextMenu}
           contextMenuItems={contextMenuItems}
           onCloseContextMenu={handleCloseContextMenu}
+          fitViewRef={fitViewRef}
         />
       </ReactFlowProvider>
     </div>
@@ -621,6 +647,7 @@ const ProcessFlowInner: React.FC<{
   contextMenu: any;
   contextMenuItems: any;
   onCloseContextMenu: any;
+  fitViewRef: any;
 }> = ({
   nodes,
   edges,
@@ -636,20 +663,29 @@ const ProcessFlowInner: React.FC<{
   edgeTypes,
   contextMenu,
   contextMenuItems,
-  onCloseContextMenu
+  onCloseContextMenu,
+  fitViewRef
 }) => {
   const reactFlowInstance = useReactFlow();
 
-  // Enhanced node drag handler with immediate edge updates
+  // Set up fitView function for parent component
+  useEffect(() => {
+    fitViewRef.current = () => {
+      reactFlowInstance.fitView({
+        padding: 0.3,
+        includeHiddenNodes: false,
+        minZoom: 0.5,
+        maxZoom: 1.5,
+        duration: 300
+      });
+    };
+  }, [reactFlowInstance, fitViewRef]);
+
+  // Enhanced node drag handler without fitView to prevent flicker
   const handleNodeDrag = useCallback((event: any, node: any) => {
     // Call original handler
     onNodeDrag(event, node);
-
-    // Force immediate edge re-calculation
-    requestAnimationFrame(() => {
-      reactFlowInstance.fitView({ duration: 0 });
-    });
-  }, [onNodeDrag, reactFlowInstance]);
+  }, [onNodeDrag]);
   return (
     <>
       <ReactFlow

@@ -11,6 +11,7 @@ function App() {
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
   const [showHappyPath, setShowHappyPath] = useState(false);
+  const [resetLayoutTrigger, setResetLayoutTrigger] = useState(0);
 
   // Fixed dataset - generated once on app load
   const eventLog = useMemo(() => {
@@ -81,6 +82,11 @@ function App() {
     });
   };
 
+  const handleResetLayout = () => {
+    console.log('Layout reset triggered from parent');
+    setResetLayoutTrigger(prev => prev + 1);
+  };
+
   // Get selected variant objects
   const selectedVariantData = variants.filter(v => selectedVariants.includes(v.variant_id));
 
@@ -101,59 +107,108 @@ function App() {
           </div>
         </div>
 
-        {/* Main Content Section - Controls and Diagram side by side */}
-        <div className="w-full bg-gray-50 pt-12 pb-8">
-          <div className="px-8" style={{ marginTop: '24px' }}>
-            <div className="flex gap-6 items-start">
-              {/* Left - Happy Path Toggle */}
-              <div className="flex-shrink-0">
-                <label
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    backgroundColor: 'white',
-                    borderRadius: '12px',
-                    padding: '12px 16px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    color: '#374151',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={showHappyPath}
-                    onChange={(e) => setShowHappyPath(e.target.checked)}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      accentColor: '#22c55e'
-                    }}
+        {/* Main Content Section - Full Width Diagram with Floating Controls */}
+        <div className="w-full bg-gray-50 pt-2 pb-8">
+          <div className="px-8">
+            {/* Main Container with Relative Positioning for Overlays */}
+            <div className="relative">
+              {/* Full Width Diagram - Background Layer */}
+              <div className="relative h-[92vh] bg-white rounded-lg shadow-sm overflow-hidden" style={{ zIndex: 1 }}>
+                <ErrorBoundary>
+                  <ProcessFlow
+                    variant={selectedVariantData}
+                    bottlenecks={bottlenecks}
+                    variants={variants}
+                    selectedVariants={selectedVariants}
+                    onVariantSelect={handleVariantSelect}
+                    showHappyPath={showHappyPath}
+                    onResetLayout={handleResetLayout}
+                    resetLayoutTrigger={resetLayoutTrigger}
                   />
-                  <span>Show Happy Path</span>
-                </label>
+                </ErrorBoundary>
               </div>
 
-              {/* Center - Diagram */}
-              <div className="flex-1">
-                <div className="relative h-[65vh] bg-white rounded-lg shadow-sm overflow-hidden">
-            <ErrorBoundary>
-              <ProcessFlow
-                variant={selectedVariantData}
-                bottlenecks={bottlenecks}
-                variants={variants}
-                selectedVariants={selectedVariants}
-                onVariantSelect={handleVariantSelect}
-                showHappyPath={showHappyPath}
-              />
-                </ErrorBoundary>
+              {/* Controls Panel - Top Left Overlay */}
+              <div style={{
+                position: 'absolute',
+                top: '20px',
+                left: '20px',
+                zIndex: 10
+              }}>
+                <div
+                  style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    minWidth: '180px'
+                  }}
+                >
+                  {/* Controls List */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    {/* Happy Path Toggle */}
+                    <div
+                      onClick={() => setShowHappyPath(!showHappyPath)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '4px 6px',
+                        borderRadius: '4px',
+                        backgroundColor: showHappyPath ? '#eff6ff' : '#e5e7eb',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        fontSize: '16px',
+                        minHeight: '20px'
+                      }}
+                    >
+                      {/* Label */}
+                      <div style={{
+                        flex: 1,
+                        fontWeight: '500',
+                        color: showHappyPath ? '#1e40af' : '#374151',
+                        textAlign: 'center'
+                      }}>
+                        Show Happy Path
+                      </div>
+                    </div>
+
+                    {/* Reset Layout Button */}
+                    <div
+                      onClick={handleResetLayout}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '4px 6px',
+                        borderRadius: '4px',
+                        backgroundColor: '#e5e7eb',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        fontSize: '16px',
+                        minHeight: '20px'
+                      }}
+                    >
+                      {/* Label */}
+                      <div style={{
+                        flex: 1,
+                        fontWeight: '500',
+                        color: '#374151',
+                        textAlign: 'center'
+                      }}>
+                        Reset Layout
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Right - Variants Panel */}
-              <div className="flex-shrink-0">
+              {/* Variants Panel - Top Right Overlay */}
+              <div style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                zIndex: 10
+              }}>
                 <div
                   style={{
                     backgroundColor: 'white',
@@ -196,10 +251,10 @@ function App() {
                               gap: '6px',
                               padding: '4px 6px',
                               borderRadius: '4px',
-                              backgroundColor: isSelected ? '#eff6ff' : '#f8f9fa',
+                              backgroundColor: isSelected ? '#eff6ff' : '#e5e7eb',
                               cursor: 'pointer',
                               transition: 'all 0.2s',
-                              fontSize: '11px',
+                              fontSize: '16px',
                               minHeight: '20px'
                             }}
                           >
@@ -208,10 +263,10 @@ function App() {
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              width: '14px',
-                              height: '14px',
+                              width: '18px',
+                              height: '18px',
                               borderRadius: '2px',
-                              fontSize: '8px',
+                              fontSize: '12px',
                               fontWeight: 'bold',
                               backgroundColor: isSelected ? '#3b82f6' : '#d1d5db',
                               color: isSelected ? 'white' : '#374151',

@@ -53,7 +53,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       style={{
         borderRadius: '12px',
         boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-        border: '2px solid #e5e7eb',
+        border: '2px solid #9ca3af',
         backgroundColor: showHappyPath && isHappyPath ? '#dcfce7' : isEnd ? '#dbeafe' : 'white',
         minWidth: '120px',
         padding: '12px 16px'
@@ -64,7 +64,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
         <Handle
           type="target"
           position={Position.Top}
-          className="w-3 h-3 bg-white border-2 border-gray-400"
+          className="w-3 h-3 bg-white border-2 border-gray-500"
           style={{
             top: -6,
             borderRadius: '50%'
@@ -87,7 +87,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
         <Handle
           type="source"
           position={Position.Bottom}
-          className="w-3 h-3 bg-white border-2 border-gray-400"
+          className="w-3 h-3 bg-white border-2 border-gray-500"
           style={{
             bottom: -6,
             borderRadius: '50%'

@@ -96,18 +96,18 @@ function applyProcessMiningLayout(
 
   if (!isPermitProcess) return null;
 
-  // Custom positioning for permit process to minimize edge crossings
+  // Custom positioning for permit process with extra space for edge labels
   const positions: Record<string, { x: number; y: number }> = {
-    'submitted': { x: 300, y: 50 },
-    'intake_validation': { x: 300, y: 150 },
-    'assigned_to_reviewer': { x: 300, y: 250 },
-    'review_in_progress': { x: 300, y: 350 },
-    'request_additional_info': { x: 500, y: 450 }, // Move to right to avoid crossing
-    'applicant_provided_info': { x: 500, y: 550 }, // Keep on right side
-    'final_review': { x: 300, y: 550 },
-    'approved': { x: 200, y: 650 },
-    'rejected': { x: 400, y: 650 },
-    'withdrawn': { x: 600, y: 650 }
+    'submitted': { x: 300, y: 20 }, // Align with panel tops
+    'intake_validation': { x: 300, y: 200 }, // More spacing for labels
+    'assigned_to_reviewer': { x: 300, y: 350 }, // More spacing for labels
+    'review_in_progress': { x: 300, y: 500 }, // More spacing for labels
+    'request_additional_info': { x: 580, y: 650 }, // Move further right and down
+    'applicant_provided_info': { x: 580, y: 800 }, // Move further right and down
+    'final_review': { x: 300, y: 800 }, // More spacing for labels
+    'approved': { x: 200, y: 950 }, // More spacing for labels
+    'rejected': { x: 400, y: 950 }, // More spacing for labels
+    'withdrawn': { x: 600, y: 950 } // More spacing for labels
   };
 
   // Apply custom positions to nodes
