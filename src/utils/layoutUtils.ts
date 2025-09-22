@@ -97,18 +97,25 @@ function applyProcessMiningLayout(
 
   if (!isPermitProcess) return null;
 
-  // Custom positioning for permit process with extra space for edge labels
+  // Symmetric tree positioning - branches spread symmetrically around source nodes
   const positions: Record<string, { x: number; y: number }> = {
-    'submitted': { x: 300, y: 20 }, // Align with panel tops
-    'intake_validation': { x: 300, y: 200 }, // More spacing for labels
-    'assigned_to_reviewer': { x: 300, y: 350 }, // More spacing for labels
-    'review_in_progress': { x: 300, y: 500 }, // More spacing for labels
-    'request_additional_info': { x: 580, y: 650 }, // Move further right and down
-    'applicant_provided_info': { x: 580, y: 800 }, // Move further right and down
-    'health_inspection': { x: 300, y: 800 }, // Same position as final_review
-    'approved': { x: 100, y: 950 }, // Final outcome after health_inspection
-    'rejected': { x: 400, y: 950 }, // Final outcome after health_inspection
-    'withdrawn': { x: 750, y: 800 } // Directly after request_additional_info, same level as applicant_provided_info
+    // Main vertical spine
+    'submitted': { x: 300, y: 20 },
+    'intake_validation': { x: 300, y: 200 },
+    'assigned_to_reviewer': { x: 300, y: 350 },
+    'review_in_progress': { x: 300, y: 500 },
+
+    // First branching point: review_in_progress splits to main path and side branch
+    'health_inspection': { x: 300, y: 800 }, // Main path continues center
+    'request_additional_info': { x: 580, y: 650 }, // Side branch to right
+
+    // Second branching point: request_additional_info splits symmetrically
+    'applicant_provided_info': { x: 430, y: 800 }, // Left branch (580 - 150)
+    'withdrawn': { x: 730, y: 800 }, // Right branch (580 + 150)
+
+    // Third branching point: health_inspection splits symmetrically
+    'approved': { x: 150, y: 950 }, // Left branch (300 - 150)
+    'rejected': { x: 450, y: 950 } // Right branch (300 + 150)
   };
 
   // Apply custom positions to nodes

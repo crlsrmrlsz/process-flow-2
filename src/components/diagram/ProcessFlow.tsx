@@ -170,18 +170,18 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       let sourceHandle = 'bottom'; // Default: exit from bottom
       let targetHandle = 'top';    // Default: enter from top
 
-      // Get node positions for smart routing (matching layoutUtils.ts)
+      // Get node positions for smart routing (matching layoutUtils.ts symmetric tree layout)
       const nodePositions: Record<string, { x: number; y: number }> = {
         'submitted': { x: 300, y: 20 },
         'intake_validation': { x: 300, y: 200 },
         'assigned_to_reviewer': { x: 300, y: 350 },
         'review_in_progress': { x: 300, y: 500 },
-        'request_additional_info': { x: 580, y: 650 },
-        'applicant_provided_info': { x: 580, y: 800 },
         'health_inspection': { x: 300, y: 800 },
-        'approved': { x: 100, y: 950 }, // Final outcome after health_inspection
-        'rejected': { x: 400, y: 950 }, // Final outcome after health_inspection
-        'withdrawn': { x: 750, y: 800 } // Directly after request_additional_info, same level as applicant_provided_info
+        'request_additional_info': { x: 580, y: 650 },
+        'applicant_provided_info': { x: 430, y: 800 }, // Left branch (580 - 150)
+        'withdrawn': { x: 730, y: 800 }, // Right branch (580 + 150)
+        'approved': { x: 150, y: 950 }, // Left branch (300 - 150)
+        'rejected': { x: 450, y: 950 } // Right branch (300 + 150)
       };
 
       const sourcePos = nodePositions[transition.from];
