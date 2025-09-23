@@ -239,14 +239,25 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     }, 100);
   }, [variants]); // Only reset layout when variants actually change, not on styling updates
 
+  // Store current positions before updating styles
+  const nodePositionsRef = useRef<{ [nodeId: string]: { x: number; y: number } }>({});
+
   // Update node and edge styles when showHappyPath or showBottlenecks changes (without changing positions)
   useEffect(() => {
     if (nodes.length === 0) return;
 
-    // Update nodes with new showHappyPath state
+    // Capture current positions before updating
+    const currentPositions: { [nodeId: string]: { x: number; y: number } } = {};
+    nodes.forEach(node => {
+      currentPositions[node.id] = { x: node.position.x, y: node.position.y };
+    });
+    nodePositionsRef.current = currentPositions;
+
+    // Update nodes with new showHappyPath state while preserving positions
     setNodes(currentNodes =>
       currentNodes.map(node => ({
         ...node,
+        position: nodePositionsRef.current[node.id] || node.position, // Restore saved position
         data: {
           ...node.data,
           showHappyPath
