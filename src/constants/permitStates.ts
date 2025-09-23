@@ -29,10 +29,10 @@ export const AUTOMATIC_STATES: PermitState[] = [
 ];
 
 export const VARIANT_DEFINITIONS = {
-  happy_path: {
+  direct_approval: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'health_inspection', 'approved'] as PermitState[],
     probability: 0.6,
-    name: 'Happy Path'
+    name: 'Direct Approval'
   },
   info_loop: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'request_additional_info', 'applicant_provided_info', 'review_in_progress', 'health_inspection', 'approved'] as PermitState[],
@@ -49,6 +49,16 @@ export const VARIANT_DEFINITIONS = {
     probability: 0.05,
     name: 'Withdrawn'
   }
+} as const;
+
+// Separate configuration for happy path concept
+// This defines which sequence represents the ideal process flow
+// Can be mapped to any variant - currently matches direct_approval
+export const HAPPY_PATH_CONFIG = {
+  // Currently using direct_approval sequence as the ideal path
+  sequence: VARIANT_DEFINITIONS.direct_approval.sequence,
+  // Alternative: could reference by variant key if desired
+  // variantKey: 'direct_approval' as keyof typeof VARIANT_DEFINITIONS
 } as const;
 
 export const TRANSITION_TIME_RANGES = {

@@ -46,14 +46,14 @@ function App() {
     console.log('App: Setting variants, extractedVariants.length =', extractedVariants.length);
     setVariants(extractedVariants);
 
-    // Auto-select first non-happy-path variant if available
+    // Auto-select first non-direct-approval variant if available
     if (extractedVariants.length > 0) {
-      const nonHappyPathVariant = extractedVariants.find(v => v.variant_id !== 'happy_path');
-      if (nonHappyPathVariant) {
-        console.log('Auto-selecting variant:', nonHappyPathVariant.variant_id);
-        setSelectedVariants([nonHappyPathVariant.variant_id]);
+      const nonDirectApprovalVariant = extractedVariants.find(v => v.variant_id !== 'direct_approval');
+      if (nonDirectApprovalVariant) {
+        console.log('Auto-selecting variant:', nonDirectApprovalVariant.variant_id);
+        setSelectedVariants([nonDirectApprovalVariant.variant_id]);
       } else {
-        console.log('No non-happy-path variants found');
+        console.log('No non-direct-approval variants found');
         setSelectedVariants([]);
       }
     } else {

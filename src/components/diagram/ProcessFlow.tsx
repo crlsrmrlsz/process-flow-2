@@ -26,7 +26,7 @@ import type { Variant } from '../../types/Variant';
 import { applyDagreLayout, refineLayoutWithOverlapResolution, saveLayoutToSession, loadLayoutFromSession, detectOverlaps } from '../../utils/layoutUtils';
 import { aggregateVariants, type AggregatedVariant } from '../../utils/variantAggregator';
 import { VariantSelectionPanel } from '../variant-panel/VariantSelectionPanel';
-import { VARIANT_DEFINITIONS } from '../../constants/permitStates';
+import { HAPPY_PATH_CONFIG } from '../../constants/permitStates';
 
 interface ProcessFlowProps {
   variant: Variant[] | null;
@@ -110,8 +110,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   const { initialNodes, initialEdges } = useMemo(() => {
     if (!aggregatedVariant) return { initialNodes: [], initialEdges: [] };
 
-    // Get happy path sequence for comparison
-    const happyPathSequence = VARIANT_DEFINITIONS.happy_path.sequence;
+    // Get happy path sequence for comparison (now decoupled from specific variant)
+    const happyPathSequence = HAPPY_PATH_CONFIG.sequence;
 
     // Create nodes for each state in the aggregated sequence
     const variantNodes: Node<CustomNodeData>[] = aggregatedVariant.sequence.map((state, index) => {
