@@ -93,6 +93,12 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
     return '#9ca3af'; // Gray-400 default
   };
 
+  // Add dashed style for bottlenecks
+  const getStrokeDasharray = () => {
+    if (showBottlenecks && isBottleneck) return '8 4'; // Dashed pattern for bottlenecks
+    return undefined; // Solid line for others
+  };
+
   const formatTime = (hours: number) => {
     if (hours < 1) return `${(hours * 60).toFixed(0)}m`;
     if (hours < 24) return `${hours.toFixed(1)}h`;
@@ -107,6 +113,7 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
         style={{
           stroke: getStrokeColor(),
           strokeWidth: getStrokeWidth(),
+          strokeDasharray: getStrokeDasharray(),
           fill: 'none',
           opacity: selected ? 1 : 0.8,
           strokeLinecap: 'round', // Smooth line ends

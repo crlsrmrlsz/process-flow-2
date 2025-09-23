@@ -185,7 +185,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           sourceHandle,
           targetHandle,
           type: 'custom',
-          animated: false, // Remove default animation
+          animated: showBottlenecks && isBottleneck, // Animate only when bottlenecks are shown
           data: {
             count: transition.count,
             medianTime: transition.median_time_hours,

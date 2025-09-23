@@ -2,7 +2,7 @@
 
 A single-page React application demonstrating process mining functionality for permit application workflows.
 
-## Phase 3 Complete ✅
+## Latest Release: Professional Graph Layout & Bottleneck Controls ✅
 
 **Features Implemented:**
 - ✅ Event log generator with seeded randomization
@@ -16,10 +16,11 @@ A single-page React application demonstrating process mining functionality for p
 - ✅ Tabbed analytics interface (Overview/Performance/Diagnostics)
 - ✅ **Visual variant selection tiles with thumbnails**
 - ✅ **Interactive React Flow process diagrams**
-- ✅ **Drag & drop node positioning with session persistence**
-- ✅ **Custom nodes with bottleneck highlighting**
+- ✅ **Industry-standard Sugiyama algorithm for graph layout**
+- ✅ **Dynamic node sizing with intelligent spacing**
+- ✅ **User-controlled bottleneck visualization**
 - ✅ **Smart edge labels with hover tooltips**
-- ✅ **Automatic dagre layout with manual override**
+- ✅ **Zero-overlap positioning system**
 
 ## Quick Start
 
@@ -34,7 +35,21 @@ npm run dev
 npm run build
 ```
 
-## New in Phase 3 🎉
+## Latest Features 🎉
+
+### **Industry-Standard Graph Layout:**
+- **🏗️ Sugiyama Algorithm** - Professional hierarchical graph layout via Dagre.js
+- **📐 Dynamic Node Sizing** - Canvas-based text measurement for optimal widths
+- **🧠 Complexity Analysis** - Graph metrics drive adaptive spacing (branching factor, depth, density)
+- **🔧 Overlap Resolution** - Automatic iterative refinement with spacing adjustment
+- **♾️ Future-Proof** - Scales to any graph structure without manual positioning
+
+### **Advanced Bottleneck Controls:**
+- **🎛️ User Toggle** - "Show Bottlenecks" button with consistent design aesthetic
+- **🎨 Pastel Styling** - Soft pink-red colors (#fb7185) for professional appearance
+- **💫 Animation & Dashing** - Blinking and dashed lines when bottlenecks are active
+- **🔍 Intelligent Detection** - 90th percentile algorithm for high-impact slow transitions
+- **⚡ Performance-Based** - Only shows bottlenecks affecting ≥10 cases with significant delays
 
 ### **Visual Variant Selection:**
 - **🎨 Interactive variant tiles** with visual thumbnails and sparklines
@@ -44,10 +59,10 @@ npm run build
 
 ### **Interactive Process Diagrams:**
 - **🔄 React Flow integration** with custom nodes and edges
-- **🎯 Automatic dagre layout** with non-overlapping node placement
+- **🎯 Zero-overlap positioning** with systematic spacing algorithms
 - **✋ Drag & drop positioning** with session persistence
-- **🚨 Real-time bottleneck highlighting** on nodes and edges
-- **📏 Smart edge thickness** based on case frequency
+- **🚨 On-demand bottleneck highlighting** controlled by user toggle
+- **📏 Enhanced edge thickness** (2-4px) for better color visibility
 - **💬 Hover tooltips** showing transition metrics
 
 ### **Advanced UI Features:**
@@ -55,7 +70,7 @@ npm run build
 - **🎛️ Zoom and pan controls** with fit-to-view
 - **📋 Process info panel** with variant statistics
 - **🔄 Layout reset button** to restore automatic positioning
-- **⚠️ Overlap detection** with visual warnings
+- **⚠️ Zero overlap guarantee** with professional spacing
 
 ## Usage
 
@@ -74,7 +89,9 @@ npm run build
    - See sparkline thumbnails and case counts per variant
 
 4. **Explore Interactive Diagrams**:
-   - View the selected variant's process flow in the center
+   - View the selected variant's process flow with professional layout
+   - Toggle "Show Happy Path" for green highlighting of optimal flow
+   - Toggle "Show Bottlenecks" for pastel pink-red highlighting with animation
    - Drag nodes to customize the layout (saves automatically)
    - Hover over edges to see transition timing details
    - Use zoom, pan, and mini-map for navigation
@@ -166,8 +183,27 @@ src/
 
 ## Algorithm Details
 
+### **Graph Layout (Sugiyama Method)**
+The application implements the industry-standard **Sugiyama algorithm** for hierarchical graph layout:
+
+- **4-Phase Process**: Cycle removal → Layer assignment → Crossing minimization → Coordinate assignment
+- **Implementation**: Uses proven Dagre.js library with custom optimizations
+- **Benefits**: Professional hierarchical layouts, minimal edge crossings, optimal readability
+- **Adaptive Spacing**: Dynamic calculation based on node content and graph complexity
+
+### **Process Mining Analytics**
 - **DFG Construction**: O(n) event log processing with transition frequency counting
 - **Variant Extraction**: Sequence hashing with performer breakdown analytics
 - **Conservation Checking**: Flow balance validation for all nodes/variants
-- **Bottleneck Detection**: Statistical analysis using 90th percentile thresholds
+- **Bottleneck Detection**: Statistical analysis using 90th percentile thresholds + frequency impact
 - **Metrics Calculation**: Comprehensive throughput and performance analysis
+
+### **Layout Optimization**
+```typescript
+// 5-Phase systematic approach:
+1. Foundation: Dagre.js integration
+2. Dynamic Sizing: Canvas text measurement
+3. Intelligent Spacing: nodesep/ranksep/edgesep calculation
+4. Overlap Resolution: Iterative refinement
+5. Complexity Analysis: Adaptive multipliers
+```
