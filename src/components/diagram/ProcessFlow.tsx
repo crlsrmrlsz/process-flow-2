@@ -237,7 +237,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
         fitViewRef.current();
       }
     }, 100);
-  }, [initialNodes, initialEdges, variants, setNodes, setEdges]);
+  }, [variants]); // Only reset layout when variants actually change, not on styling updates
 
   // Update node and edge styles when showHappyPath or showBottlenecks changes (without changing positions)
   useEffect(() => {
