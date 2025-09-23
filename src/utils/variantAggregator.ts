@@ -80,11 +80,12 @@ export function calculateTotalFlow(cases: ProcessCase[]): TotalFlowData {
       stateData.unique_case_count = stateData.cases.size;
     });
 
-    // Extract transitions from this case's sequence
-    for (let i = 0; i < sequence.length - 1; i++) {
-      const fromState = sequence[i];
-      const toState = sequence[i + 1];
-      const transitionKey = `${fromState} → ${toState}`;
+    // Extract transitions from this case's events (handle loops correctly)
+    // Use sequential event iteration like the original variant extraction
+    for (let eventIdx = 0; eventIdx < events.length - 1; eventIdx++) {
+      const currentEvent = events[eventIdx];
+      const nextEvent = events[eventIdx + 1];
+      const transitionKey = `${currentEvent.state} → ${nextEvent.state}`;
 
       // Initialize transition data if not exists
       if (!transitions.has(transitionKey)) {
@@ -100,21 +101,16 @@ export function calculateTotalFlow(cases: ProcessCase[]): TotalFlowData {
       transitionData.count += 1;
       transitionData.cases.add(case_id);
 
-      // Find the timing data for this transition from events
-      const fromEvent = events.find(e => e.state === fromState);
-      const toEvent = events.find(e => e.state === toState);
+      // Calculate transition time using sequential events (fixes negative time bug)
+      const transitionTime = (new Date(nextEvent.timestamp).getTime() - new Date(currentEvent.timestamp).getTime()) / (1000 * 60 * 60); // hours
+      transitionData.times.push(transitionTime);
 
-      if (fromEvent && toEvent) {
-        const transitionTime = (new Date(toEvent.timestamp).getTime() - new Date(fromEvent.timestamp).getTime()) / (1000 * 60 * 60); // hours
-        transitionData.times.push(transitionTime);
-
-        // Track performer data if available
-        const performer = toEvent.performer || 'system';
-        if (!transitionData.performer_data.has(performer)) {
-          transitionData.performer_data.set(performer, []);
-        }
-        transitionData.performer_data.get(performer)!.push(transitionTime);
+      // Track performer data if available
+      const performer = nextEvent.performer || 'system';
+      if (!transitionData.performer_data.has(performer)) {
+        transitionData.performer_data.set(performer, []);
       }
+      transitionData.performer_data.get(performer)!.push(transitionTime);
     }
   });
 
