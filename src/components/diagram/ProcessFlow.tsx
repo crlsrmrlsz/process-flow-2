@@ -187,7 +187,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           sourceHandle,
           targetHandle,
           type: 'custom',
-          animated: showBottlenecks && isBottleneck, // Animate only when bottlenecks are shown
+          animated: false, // Will be set by useEffect to avoid layout reset
           data: {
             count: transition.count,
             medianTime: transition.median_time_hours,
@@ -197,7 +197,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
             performer_breakdown: transition.performer_breakdown, // Include for splitting
             isHappyPath,
             showHappyPath,
-            showBottlenecks
+            showBottlenecks: false // Will be set by useEffect to avoid layout reset
           }
     });
   });
@@ -258,6 +258,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     setEdges(currentEdges =>
       currentEdges.map(edge => ({
         ...edge,
+        animated: showBottlenecks && edge.data?.isBottleneck, // Set animation here to avoid layout reset
         data: {
           ...edge.data,
           showHappyPath,
