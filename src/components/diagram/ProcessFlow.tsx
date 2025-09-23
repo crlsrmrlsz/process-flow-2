@@ -24,7 +24,7 @@ import type { CustomNodeData } from './CustomNode';
 import type { CustomEdgeData } from './CustomEdge';
 import type { Variant } from '../../types/Variant';
 import { applyDagreLayout, refineLayoutWithOverlapResolution, saveLayoutToSession, loadLayoutFromSession, detectOverlaps } from '../../utils/layoutUtils';
-import { aggregateVariants, type AggregatedVariant } from '../../utils/variantAggregator';
+import { aggregateVariants, type AggregatedVariant, type TotalFlowData } from '../../utils/variantAggregator';
 import { VariantSelectionPanel } from '../variant-panel/VariantSelectionPanel';
 import { HAPPY_PATH_CONFIG } from '../../constants/permitStates';
 
@@ -42,6 +42,7 @@ interface ProcessFlowProps {
   showBottlenecks: boolean;
   onResetLayout?: () => void;
   resetLayoutTrigger?: number;
+  totalFlowData?: TotalFlowData | null;
 }
 
 const nodeTypes: NodeTypes = {
@@ -61,7 +62,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   showHappyPath,
   showBottlenecks,
   onResetLayout,
-  resetLayoutTrigger
+  resetLayoutTrigger,
+  totalFlowData
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -76,11 +78,11 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
 
 
 
-  // Generate aggregated variant data
+  // Generate aggregated variant data with total flow data for topology vs volume separation
   const aggregatedVariant = useMemo(() => {
     if (!variants || variants.length === 0) return null;
-    return aggregateVariants(variants);
-  }, [variants]);
+    return aggregateVariants(variants, totalFlowData || undefined);
+  }, [variants, totalFlowData]);
 
   // Generate performer colors
   const performerColors = useMemo(() => {

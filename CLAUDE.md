@@ -83,3 +83,4 @@ dagreGraph.setGraph({
 - **Reset Layout**: Restore automatic positioning with systematic spacing
 
 - commit every change in code with descriptive comment about the change
+- commit after every change with descriptive comments that makes it easy to follow changes

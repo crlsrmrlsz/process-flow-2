@@ -5,6 +5,7 @@ import { generateEventLog } from './utils/dataGenerator';
 import { ProcessFlow } from './components/diagram/ProcessFlow';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import { extractCases, extractVariants } from './utils/variantExtractor';
+import { calculateTotalFlow, type TotalFlowData } from './utils/variantAggregator';
 import { identifyBottlenecks } from './utils/metricsCalculator';
 
 function App() {
@@ -38,6 +39,21 @@ function App() {
     } catch (error) {
       console.error('Error processing event log:', error);
       return [];
+    }
+  }, [eventLog]);
+
+  // Calculate total flow data from ALL cases (for topology vs volume separation)
+  const totalFlowData = useMemo(() => {
+    if (!eventLog) return null;
+
+    try {
+      const cases = extractCases(eventLog.events);
+      const flowData = calculateTotalFlow(cases);
+      console.log('Calculated total flow data with', flowData.transitions.size, 'unique transitions');
+      return flowData;
+    } catch (error) {
+      console.error('Error calculating total flow:', error);
+      return null;
     }
   }, [eventLog]);
 
@@ -126,6 +142,7 @@ function App() {
                     showBottlenecks={showBottlenecks}
                     onResetLayout={handleResetLayout}
                     resetLayoutTrigger={resetLayoutTrigger}
+                    totalFlowData={totalFlowData}
                   />
                 </ErrorBoundary>
               </div>
