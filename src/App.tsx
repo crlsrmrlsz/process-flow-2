@@ -111,15 +111,18 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Container - Central panel with lateral spaces */}
-      <div className="w-[70%] mx-auto">
+      <div className="w-[60%] mx-auto">
         {/* Header Section */}
         <div className="w-full bg-white border-b border-gray-200 py-8">
           <div className="px-8 text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-3">
               Process Mining Demo
             </h1>
-            <p className="text-lg text-gray-600">
-              Interactive analysis of permit application process variants and optimal flows
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Visualize real building permit workflows from submission through inspection, review, and final approval.
+              Explore different process variants to understand how applications flow through planning departments, safety reviews, and compliance checks.
+              Use Happy Path to highlight optimal routes and Bottlenecks to identify delays in the approval process.
+              Drag nodes to customize the layout and analyze process efficiency patterns.
             </p>
           </div>
         </div>
@@ -159,32 +162,52 @@ function App() {
                     backgroundColor: 'white',
                     borderRadius: '12px',
                     padding: '12px',
-                    minWidth: '180px'
+                    minWidth: '200px'
                   }}
                 >
                   {/* Controls List */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {/* Happy Path Toggle */}
                     <div
                       onClick={() => setShowHappyPath(!showHappyPath)}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
-                        padding: '4px 6px',
-                        borderRadius: '4px',
-                        backgroundColor: showHappyPath ? '#eff6ff' : '#e5e7eb',
+                        gap: '8px',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        background: showHappyPath
+                          ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                          : 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '16px',
-                        minHeight: '20px'
+                        transition: 'all 0.3s ease',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        minHeight: '40px',
+                        boxShadow: showHappyPath
+                          ? '0 4px 12px rgba(16, 185, 129, 0.3)'
+                          : '0 2px 4px rgba(0, 0, 0, 0.1)',
+                        transform: 'scale(1)',
+                        border: showHappyPath ? 'none' : '1px solid #d1d5db'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.02)';
+                        e.currentTarget.style.boxShadow = showHappyPath
+                          ? '0 6px 16px rgba(16, 185, 129, 0.4)'
+                          : '0 4px 8px rgba(0, 0, 0, 0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = showHappyPath
+                          ? '0 4px 12px rgba(16, 185, 129, 0.3)'
+                          : '0 2px 4px rgba(0, 0, 0, 0.1)';
                       }}
                     >
                       {/* Label */}
                       <div style={{
                         flex: 1,
                         fontWeight: '500',
-                        color: showHappyPath ? '#1e40af' : '#374151',
+                        color: showHappyPath ? 'white' : '#374151',
                         textAlign: 'center'
                       }}>
                         Show Happy Path
@@ -197,21 +220,41 @@ function App() {
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
-                        padding: '4px 6px',
-                        borderRadius: '4px',
-                        backgroundColor: showBottlenecks ? '#fef2f2' : '#e5e7eb',
+                        gap: '8px',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        background: showBottlenecks
+                          ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                          : 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '16px',
-                        minHeight: '20px'
+                        transition: 'all 0.3s ease',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        minHeight: '40px',
+                        boxShadow: showBottlenecks
+                          ? '0 4px 12px rgba(239, 68, 68, 0.3)'
+                          : '0 2px 4px rgba(0, 0, 0, 0.1)',
+                        transform: 'scale(1)',
+                        border: showBottlenecks ? 'none' : '1px solid #d1d5db'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.02)';
+                        e.currentTarget.style.boxShadow = showBottlenecks
+                          ? '0 6px 16px rgba(239, 68, 68, 0.4)'
+                          : '0 4px 8px rgba(0, 0, 0, 0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = showBottlenecks
+                          ? '0 4px 12px rgba(239, 68, 68, 0.3)'
+                          : '0 2px 4px rgba(0, 0, 0, 0.1)';
                       }}
                     >
                       {/* Label */}
                       <div style={{
                         flex: 1,
                         fontWeight: '500',
-                        color: showBottlenecks ? '#dc2626' : '#374151',
+                        color: showBottlenecks ? 'white' : '#374151',
                         textAlign: 'center'
                       }}>
                         Show Bottlenecks
@@ -224,21 +267,33 @@ function App() {
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
-                        padding: '4px 6px',
-                        borderRadius: '4px',
-                        backgroundColor: '#e5e7eb',
+                        gap: '8px',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '16px',
-                        minHeight: '20px'
+                        transition: 'all 0.3s ease',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        minHeight: '40px',
+                        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                        transform: 'scale(1)',
+                        border: 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.02)';
+                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3)';
                       }}
                     >
                       {/* Label */}
                       <div style={{
                         flex: 1,
                         fontWeight: '500',
-                        color: '#374151',
+                        color: 'white',
                         textAlign: 'center'
                       }}>
                         Reset Layout
