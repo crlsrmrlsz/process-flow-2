@@ -65,16 +65,32 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   resetLayoutTrigger,
   totalFlowData
 }) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChangeOriginal] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [hasManualLayout, setHasManualLayout] = useState(false);
 
   // Add missing refs for drag tracking
   const isDragging = useRef(false);
   const dragUpdateTimer = useRef<NodeJS.Timeout | null>(null);
+  const isStyleUpdate = useRef(false);
 
   // Drag sensitivity factor - makes nodes feel "heavier"
   const DRAG_SENSITIVITY = 0.7; // Reduce to 70% of normal speed
+
+  // Custom onNodesChange that preserves positions during style updates
+  const onNodesChange = useCallback((changes: any[]) => {
+    // If we're in the middle of a style update, preserve positions
+    if (isStyleUpdate.current) {
+      // Filter out position changes during style updates
+      const filteredChanges = changes.filter(change =>
+        change.type !== 'position' || change.dragging
+      );
+      onNodesChangeOriginal(filteredChanges);
+    } else {
+      // Normal operation - allow all changes
+      onNodesChangeOriginal(changes);
+    }
+  }, [onNodesChangeOriginal]);
 
 
 
@@ -239,25 +255,17 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     }, 100);
   }, [variants]); // Only reset layout when variants actually change, not on styling updates
 
-  // Store current positions before updating styles
-  const nodePositionsRef = useRef<{ [nodeId: string]: { x: number; y: number } }>({});
-
   // Update node and edge styles when showHappyPath or showBottlenecks changes (without changing positions)
   useEffect(() => {
     if (nodes.length === 0) return;
 
-    // Capture current positions before updating
-    const currentPositions: { [nodeId: string]: { x: number; y: number } } = {};
-    nodes.forEach(node => {
-      currentPositions[node.id] = { x: node.position.x, y: node.position.y };
-    });
-    nodePositionsRef.current = currentPositions;
+    // Mark that we're doing a style update to prevent position resets
+    isStyleUpdate.current = true;
 
-    // Update nodes with new showHappyPath state while preserving positions
+    // Update nodes with new showHappyPath state (onNodesChange will filter position changes)
     setNodes(currentNodes =>
       currentNodes.map(node => ({
         ...node,
-        position: nodePositionsRef.current[node.id] || node.position, // Restore saved position
         data: {
           ...node.data,
           showHappyPath
@@ -277,6 +285,11 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
         }
       }))
     );
+
+    // Clear the style update flag after React has processed the changes
+    setTimeout(() => {
+      isStyleUpdate.current = false;
+    }, 0);
   }, [showHappyPath, showBottlenecks, setNodes, setEdges]);
 
   // Custom drag handler with reduced sensitivity for "heavier" feel
