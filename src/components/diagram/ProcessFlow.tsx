@@ -147,7 +147,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           isStart,
           isEnd,
           isHappyPath,
-          showHappyPath
+          showHappyPath: false // Will be set by useEffect to avoid layout reset
         }
       };
     });
@@ -196,7 +196,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
             contributingVariants: transition.contributing_variants,
             performer_breakdown: transition.performer_breakdown, // Include for splitting
             isHappyPath,
-            showHappyPath,
+            showHappyPath: false, // Will be set by useEffect to avoid layout reset
             showBottlenecks: false // Will be set by useEffect to avoid layout reset
           }
     });
