@@ -19,6 +19,7 @@ export interface CustomEdgeData {
   totalPerformers?: number; // Total number of performers for this transition
   isHappyPath?: boolean;
   showHappyPath?: boolean;
+  showBottlenecks?: boolean;
 }
 
 export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
@@ -74,20 +75,22 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
 
   if (!data) return null;
 
-  const { count, medianTime, meanTime, isBottleneck, contributingVariants, performer, isHappyPath, showHappyPath } = data;
+  const { count, medianTime, meanTime, isBottleneck, contributingVariants, performer, isHappyPath, showHappyPath, showBottlenecks } = data;
 
 
   // Clean edge styling following design guide
   const getStrokeWidth = () => {
+    if (showBottlenecks && isBottleneck) return 4; // Thicker for bottlenecks
     if (showHappyPath && isHappyPath) return 3; // Slightly thicker for happy path
-    return selected ? 3 : 1.5; // Slightly wider for better visibility
+    return selected ? 3 : 2; // Increased base thickness for better visibility
   };
 
-  // Design guide color scheme
+  // Design guide color scheme with pastel bottleneck colors
   const getStrokeColor = () => {
+    if (showBottlenecks && isBottleneck) return '#fb7185'; // Pastel pink-red for bottlenecks
     if (showHappyPath && isHappyPath) return '#4ade80'; // Green-400 for happy path
     if (selected) return '#4f46e5'; // Indigo-600 when selected
-    return '#9ca3af'; // Gray-400 default, more visible
+    return '#9ca3af'; // Gray-400 default
   };
 
   const formatTime = (hours: number) => {

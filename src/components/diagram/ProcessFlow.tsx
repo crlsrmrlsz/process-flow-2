@@ -39,6 +39,7 @@ interface ProcessFlowProps {
   selectedVariants: string[];
   onVariantSelect: (variantId: string) => void;
   showHappyPath: boolean;
+  showBottlenecks: boolean;
   onResetLayout?: () => void;
   resetLayoutTrigger?: number;
 }
@@ -58,6 +59,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   selectedVariants,
   onVariantSelect,
   showHappyPath,
+  showBottlenecks,
   onResetLayout,
   resetLayoutTrigger
 }) => {
@@ -183,7 +185,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           sourceHandle,
           targetHandle,
           type: 'custom',
-          animated: isBottleneck,
+          animated: false, // Remove default animation
           data: {
             count: transition.count,
             medianTime: transition.median_time_hours,
@@ -192,7 +194,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
             contributingVariants: transition.contributing_variants,
             performer_breakdown: transition.performer_breakdown, // Include for splitting
             isHappyPath,
-            showHappyPath
+            showHappyPath,
+            showBottlenecks
           }
     });
   });
@@ -234,7 +237,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     }, 100);
   }, [initialNodes, initialEdges, variants, setNodes, setEdges]);
 
-  // Update node and edge styles when showHappyPath changes (without changing positions)
+  // Update node and edge styles when showHappyPath or showBottlenecks changes (without changing positions)
   useEffect(() => {
     if (nodes.length === 0) return;
 
@@ -249,17 +252,18 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       }))
     );
 
-    // Update edges with new showHappyPath state
+    // Update edges with new showHappyPath and showBottlenecks state
     setEdges(currentEdges =>
       currentEdges.map(edge => ({
         ...edge,
         data: {
           ...edge.data,
-          showHappyPath
+          showHappyPath,
+          showBottlenecks
         }
       }))
     );
-  }, [showHappyPath, setNodes, setEdges]);
+  }, [showHappyPath, showBottlenecks, setNodes, setEdges]);
 
   // Custom drag handler with reduced sensitivity for "heavier" feel
   const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null);

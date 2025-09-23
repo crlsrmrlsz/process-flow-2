@@ -11,6 +11,7 @@ function App() {
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
   const [showHappyPath, setShowHappyPath] = useState(false);
+  const [showBottlenecks, setShowBottlenecks] = useState(false);
   const [resetLayoutTrigger, setResetLayoutTrigger] = useState(0);
 
   // Fixed dataset - generated once on app load
@@ -122,6 +123,7 @@ function App() {
                     selectedVariants={selectedVariants}
                     onVariantSelect={handleVariantSelect}
                     showHappyPath={showHappyPath}
+                    showBottlenecks={showBottlenecks}
                     onResetLayout={handleResetLayout}
                     resetLayoutTrigger={resetLayoutTrigger}
                   />
@@ -169,6 +171,33 @@ function App() {
                         textAlign: 'center'
                       }}>
                         Show Happy Path
+                      </div>
+                    </div>
+
+                    {/* Show Bottlenecks Toggle */}
+                    <div
+                      onClick={() => setShowBottlenecks(!showBottlenecks)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '4px 6px',
+                        borderRadius: '4px',
+                        backgroundColor: showBottlenecks ? '#fef2f2' : '#e5e7eb',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        fontSize: '16px',
+                        minHeight: '20px'
+                      }}
+                    >
+                      {/* Label */}
+                      <div style={{
+                        flex: 1,
+                        fontWeight: '500',
+                        color: showBottlenecks ? '#dc2626' : '#374151',
+                        textAlign: 'center'
+                      }}>
+                        Show Bottlenecks
                       </div>
                     </div>
 
