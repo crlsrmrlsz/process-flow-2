@@ -13,8 +13,8 @@ export const defaultLayoutOptions: LayoutOptions = {
   direction: 'TB', // Top to Bottom (vertical flow)
   nodeWidth: 150,
   nodeHeight: 80,
-  nodeSpacing: 50,
-  rankSpacing: 100
+  nodeSpacing: 40,  // Reduced from 50
+  rankSpacing: 70   // Reduced from 100 for shorter edges
 };
 
 // Text measurement utility for dynamic node sizing
@@ -121,10 +121,10 @@ function calculateOptimalSpacingConfig(
   // Analyze graph complexity
   const complexity = analyzeGraphComplexity(nodes, edges);
 
-  // Base spacing calculations
-  let baseNodeSep = Math.max(maxWidth * 0.6, 80);
-  let baseRankSep = Math.max(avgWidth * 0.4, 120);
-  let baseEdgeSep = Math.max(avgWidth * 0.2, 20);
+  // Base spacing calculations - reduced for more compact layout
+  let baseNodeSep = Math.max(maxWidth * 0.5, 60);
+  let baseRankSep = Math.max(avgWidth * 0.3, 80);
+  let baseEdgeSep = Math.max(avgWidth * 0.15, 15);
 
   // Apply complexity-based multipliers
   const branchingMultiplier = 1 + (complexity.maxBranchingFactor - 1) * 0.3; // Increase for high branching
@@ -136,11 +136,11 @@ function calculateOptimalSpacingConfig(
   const ranksep = baseRankSep * depthMultiplier;
   const edgesep = baseEdgeSep * densityMultiplier;
 
-  // Ensure reasonable bounds
+  // Ensure reasonable bounds - reduced ranges for more compact layout
   return {
-    nodesep: Math.min(Math.max(nodesep, 80), 300), // 80-300px range
-    ranksep: Math.min(Math.max(ranksep, 120), 250), // 120-250px range
-    edgesep: Math.min(Math.max(edgesep, 20), 60)    // 20-60px range
+    nodesep: Math.min(Math.max(nodesep, 60), 250), // 60-250px range
+    ranksep: Math.min(Math.max(ranksep, 80), 180), // 80-180px range (shorter edges)
+    edgesep: Math.min(Math.max(edgesep, 15), 45)   // 15-45px range
   };
 }
 
@@ -167,8 +167,8 @@ export function applyDagreLayout(
     nodesep: spacingConfig.nodesep,
     ranksep: spacingConfig.ranksep,
     edgesep: spacingConfig.edgesep,
-    marginx: 50,
-    marginy: 50
+    marginx: 30, // Reduced from 50
+    marginy: 30  // Reduced from 50
   });
 
   // Add nodes to dagre graph with dynamic widths

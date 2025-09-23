@@ -118,12 +118,12 @@ function App() {
             <h1 className="text-3xl font-bold text-gray-900 mb-3">
               Process Mining Demo
             </h1>
-            <div className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed space-y-4">
+            <div className="text-base text-gray-600 max-w-3xl mx-auto leading-normal space-y-3">
               <p>
-                Explore the journey of restaurant permit applications from submission to final approval. The process begins when applications are submitted, moves through intake validation and reviewer assignment, then enters detailed review by city staff. Applications may require additional documentation, triggering a loop back for more information. Successfully reviewed applications proceed to mandatory health inspections before final approval, while some may be rejected or withdrawn during the process.
+                Explore restaurant permit applications from submission through health inspection to final approval. Applications flow through intake validation, reviewer assignment, detailed review, and may loop back for additional information before proceeding to health inspection and final decision.
               </p>
               <p>
-                This interactive process mining tool lets you visualize different workflow patterns (variants), select variants to see their unique paths, and analyze process efficiency. Use 'Happy Path' to highlight the optimal approval route in green, toggle 'Bottlenecks' to identify delays shown in red, and drag nodes to customize the layout for better analysis.
+                Visualize workflow patterns, select variants to see unique paths, and analyze efficiency. Use 'Happy Path' for optimal routes (green) and 'Bottlenecks' for delays (red).
               </p>
             </div>
           </div>
