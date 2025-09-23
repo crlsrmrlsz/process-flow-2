@@ -62,12 +62,12 @@ export const HAPPY_PATH_CONFIG = {
 } as const;
 
 export const TRANSITION_TIME_RANGES = {
-  'submitted->intake_validation': { min: 0.5, max: 2 }, // hours
+  'submitted->intake_validation': { min: 24, max: 48 }, // 1-2 days - workers have other tasks
   'intake_validation->assigned_to_reviewer': { min: 0.1, max: 0.5 },
-  'assigned_to_reviewer->review_in_progress': { min: 0.1, max: 0.3 },
+  'assigned_to_reviewer->review_in_progress': { min: 48, max: 120 }, // 2-5 days - workers have other tasks
   'review_in_progress->health_inspection': { min: 24, max: 168 }, // 1-7 days
   'review_in_progress->request_additional_info': { min: 24, max: 168 },
-  'request_additional_info->applicant_provided_info': { min: 1, max: 3 }, // automatic
+  'request_additional_info->applicant_provided_info': { min: 48, max: 72 }, // 2-3 days - applicants need time to gather documents
   'applicant_provided_info->review_in_progress': { min: 48, max: 336 }, // 2-14 days (bottleneck)
   'health_inspection->approved': { min: 24, max: 120 }, // 1-5 days
   'health_inspection->rejected': { min: 24, max: 120 },
