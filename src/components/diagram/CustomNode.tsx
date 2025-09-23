@@ -9,6 +9,7 @@ export interface CustomNodeData {
   isEnd: boolean;
   isHappyPath?: boolean;
   showHappyPath?: boolean;
+  calculatedWidth?: number;
 }
 
 interface CustomNodeProps {
@@ -17,7 +18,7 @@ interface CustomNodeProps {
 }
 
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
-  const { label, count, isBottleneck, isStart, isEnd, isHappyPath, showHappyPath } = data;
+  const { label, count, isBottleneck, isStart, isEnd, isHappyPath, showHappyPath, calculatedWidth } = data;
 
   // Check if this is a final node that should show total time
   const isFinalNode = label === 'approved' || label === 'rejected' || label === 'withdrawn';
@@ -25,7 +26,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
   // Get node styling based on design guide patterns - FORCE modern rounded style
   const getNodeStyle = () => {
     // Use !important-style approach with explicit rounded-xl and modern styling
-    let baseClasses = "!rounded-xl px-4 py-3 text-sm !shadow-lg !border-2 transition-all duration-300 font-medium min-w-[120px] text-center";
+    let baseClasses = "!rounded-xl px-4 py-3 text-sm !shadow-lg !border-2 transition-all duration-300 font-medium text-center";
 
     if (selected) {
       baseClasses += " !ring-4 !ring-blue-400 !ring-opacity-50";
@@ -68,6 +69,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
         boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
         border: '2px solid #9ca3af',
         backgroundColor: showHappyPath && isHappyPath ? '#dcfce7' : isEnd ? '#dbeafe' : 'white',
+        width: calculatedWidth ? `${calculatedWidth}px` : '120px',
         minWidth: '120px',
         padding: '12px 16px'
       }}

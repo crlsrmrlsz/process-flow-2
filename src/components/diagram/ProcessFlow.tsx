@@ -23,7 +23,7 @@ import { CustomEdge } from './CustomEdge';
 import type { CustomNodeData } from './CustomNode';
 import type { CustomEdgeData } from './CustomEdge';
 import type { Variant } from '../../types/Variant';
-import { applyDagreLayout, saveLayoutToSession, loadLayoutFromSession, detectOverlaps } from '../../utils/layoutUtils';
+import { applyDagreLayout, refineLayoutWithOverlapResolution, saveLayoutToSession, loadLayoutFromSession, detectOverlaps } from '../../utils/layoutUtils';
 import { aggregateVariants, type AggregatedVariant } from '../../utils/variantAggregator';
 import { VariantSelectionPanel } from '../variant-panel/VariantSelectionPanel';
 import { VARIANT_DEFINITIONS } from '../../constants/permitStates';
@@ -130,7 +130,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       const count = stateOccupancy ? stateOccupancy.unique_case_count : 0;
 
       // Check if this state is part of the happy path
-      const isHappyPath = happyPathSequence.includes(state);
+      const isHappyPath = happyPathSequence.includes(state as any);
 
       return {
         id: state,
@@ -152,7 +152,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     const variantEdges: Edge<CustomEdgeData>[] = [];
 
     // Get happy path transitions for comparison
-    const happyPathTransitions = [];
+    const happyPathTransitions: string[] = [];
     for (let i = 0; i < happyPathSequence.length - 1; i++) {
       happyPathTransitions.push(`${happyPathSequence[i]}-${happyPathSequence[i + 1]}`);
     }
@@ -170,41 +170,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       let sourceHandle = 'bottom'; // Default: exit from bottom
       let targetHandle = 'top';    // Default: enter from top
 
-      // Get node positions for smart routing (matching layoutUtils.ts symmetric tree layout)
-      const nodePositions: Record<string, { x: number; y: number }> = {
-        'submitted': { x: 300, y: 20 },
-        'intake_validation': { x: 300, y: 200 },
-        'assigned_to_reviewer': { x: 300, y: 350 },
-        'review_in_progress': { x: 300, y: 500 },
-        'health_inspection': { x: 300, y: 800 },
-        'request_additional_info': { x: 580, y: 650 },
-        'applicant_provided_info': { x: 430, y: 800 }, // Left branch (580 - 150)
-        'withdrawn': { x: 730, y: 800 }, // Right branch (580 + 150)
-        'approved': { x: 150, y: 950 }, // Left branch (300 - 150)
-        'rejected': { x: 450, y: 950 } // Right branch (300 + 150)
-      };
-
-      const sourcePos = nodePositions[transition.from];
-      const targetPos = nodePositions[transition.to];
-
-      if (sourcePos && targetPos) {
-        // Detect problematic edges: backward/horizontal flows with significant horizontal distance
-        const isBackwardOrHorizontal = sourcePos.y >= targetPos.y;
-        const hasLargeHorizontalDistance = Math.abs(sourcePos.x - targetPos.x) > 200;
-
-        if (isBackwardOrHorizontal && hasLargeHorizontalDistance) {
-          // Use side handles to route around main flow
-          if (sourcePos.x > targetPos.x) {
-            // Source is to the right of target - both use right side to curve around
-            sourceHandle = 'right';
-            targetHandle = 'right';
-          } else {
-            // Source is to the left of target - both use left side to curve around
-            sourceHandle = 'left';
-            targetHandle = 'left';
-          }
-        }
-      }
+      // Note: Node positions are now calculated dynamically by the tree layout algorithm
+      // ReactFlow will handle edge routing with the actual node positions after layout
 
       // All downward edges use bottom handles - let ReactFlow handle curve separation naturally
 
@@ -253,8 +220,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       sessionStorage.removeItem(`process-flow-layout-${variantKey}`);
     }
 
-    // Always apply automatic layout with TB direction for now
-    const layouted = applyDagreLayout(initialNodes, initialEdges);
+    // Apply refined layout with automatic overlap resolution
+    const layouted = refineLayoutWithOverlapResolution(initialNodes, initialEdges);
     setNodes(layouted.nodes);
     setEdges(layouted.edges);
     setHasManualLayout(false);
@@ -365,7 +332,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   // Internal reset function without callback
   const doResetLayout = useCallback(() => {
     if (initialNodes.length > 0) {
-      const layouted = applyDagreLayout(initialNodes, initialEdges);
+      const layouted = refineLayoutWithOverlapResolution(initialNodes, initialEdges);
       setNodes(layouted.nodes);
       setEdges(layouted.edges);
       setHasManualLayout(false);
