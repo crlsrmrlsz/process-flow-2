@@ -7,6 +7,7 @@ import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import { extractCases, extractVariants } from './utils/variantExtractor';
 import { calculateTotalFlow, type TotalFlowData } from './utils/variantAggregator';
 import { identifyBottlenecks } from './utils/metricsCalculator';
+import { VARIANT_DEFINITIONS } from './constants/permitStates';
 
 function App() {
   const [variants, setVariants] = useState<Variant[]>([]);
@@ -14,6 +15,18 @@ function App() {
   const [showHappyPath, setShowHappyPath] = useState(false);
   const [showBottlenecks, setShowBottlenecks] = useState(false);
   const [resetLayoutTrigger, setResetLayoutTrigger] = useState(0);
+
+  // Helper function to get proper variant display name
+  const getVariantDisplayName = (variantId: string): string => {
+    // Direct lookup in VARIANT_DEFINITIONS
+    const variantKey = variantId as keyof typeof VARIANT_DEFINITIONS;
+    if (VARIANT_DEFINITIONS[variantKey]) {
+      return VARIANT_DEFINITIONS[variantKey].name;
+    }
+
+    // Fallback to formatted variant_id if not found in definitions
+    return variantId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
 
   // Fixed dataset - generated once on app load
   const eventLog = useMemo(() => {
@@ -195,7 +208,7 @@ function App() {
                         const isSelected = selectedVariants.includes(variant.variant_id);
                         const totalCases = variants.reduce((sum, v) => sum + v.case_count, 0);
                         const percentage = ((variant.case_count / totalCases) * 100).toFixed(1);
-                        const displayName = variant.variant_id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        const displayName = getVariantDisplayName(variant.variant_id);
 
                         return (
                           <div key={variant.variant_id}>
