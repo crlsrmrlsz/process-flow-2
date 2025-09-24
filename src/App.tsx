@@ -140,8 +140,8 @@ function App() {
           <div className="px-8">
             {/* Main Container with Relative Positioning for Overlays */}
             <div className="relative">
-              {/* Full Width Diagram - Background Layer */}
-              <div className="relative h-[92vh] bg-white rounded-lg shadow-sm overflow-hidden" style={{ zIndex: 1 }}>
+              {/* Full Width Diagram - Background Layer with top margin to avoid panel overlap */}
+              <div className="relative h-[92vh] bg-white rounded-lg shadow-sm overflow-hidden" style={{ zIndex: 1, marginTop: '120px' }}>
                 <ErrorBoundary>
                   <ProcessFlow
                     variant={selectedVariantData}

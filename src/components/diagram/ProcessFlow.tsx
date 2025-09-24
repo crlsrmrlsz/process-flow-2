@@ -186,14 +186,12 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       // Check if this transition is part of the happy path
       const isHappyPath = happyPathTransitions.includes(transitionKey);
 
-      // Smart handle selection to avoid edge crossings
-      let sourceHandle = 'bottom'; // Default: exit from bottom
-      let targetHandle = 'top';    // Default: enter from top
+      // Handle selection for horizontal flow
+      let sourceHandle = 'right'; // Default: exit from right
+      let targetHandle = 'left';   // Default: enter from left
 
-      // Note: Node positions are now calculated dynamically by the tree layout algorithm
+      // For horizontal flow, edges naturally flow from left to right
       // ReactFlow will handle edge routing with the actual node positions after layout
-
-      // All downward edges use bottom handles - let ReactFlow handle curve separation naturally
 
       // Create single aggregated edge with smart handle selection
       variantEdges.push({
