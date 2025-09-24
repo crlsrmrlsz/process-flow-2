@@ -168,7 +168,7 @@ function App() {
                   }}
                 >
                   {/* Controls List */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {/* Happy Path Toggle */}
                     <button
                       onClick={() => setShowHappyPath(!showHappyPath)}
