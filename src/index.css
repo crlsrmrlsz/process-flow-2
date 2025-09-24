@@ -135,3 +135,20 @@ html, body, #root {
   white-space: nowrap;
   text-align: left;
 }
+
+/* Enhanced arrow visibility - make arrows much larger and more visible */
+.react-flow__arrowclosed {
+  fill: currentColor;
+  stroke: currentColor;
+  transform: scale(1.8); /* Make arrows 80% larger */
+}
+
+/* Make default arrows bigger and more visible */
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+/* Custom enhanced arrows for backward edges */
+.backward-edge-path {
+  stroke-width: 3;
+}
