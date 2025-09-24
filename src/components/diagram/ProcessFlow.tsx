@@ -7,7 +7,8 @@ import ReactFlow, {
   Background,
   Panel,
   useReactFlow,
-  ReactFlowProvider
+  ReactFlowProvider,
+  MarkerType
 } from 'reactflow';
 import type {
   Node,
@@ -550,6 +551,31 @@ const ProcessFlowInner: React.FC<{
         elevateNodesOnSelect={true}
         elevateEdgesOnSelect={true}
       >
+        {/* SVG Marker Definitions for Arrows */}
+        <svg>
+          <defs>
+            <marker
+              id="react-flow__arrowclosed"
+              markerWidth="12"
+              markerHeight="12"
+              viewBox="-10 -10 20 20"
+              markerUnits="strokeWidth"
+              orient="auto-start-reverse"
+              refX="0"
+              refY="0"
+            >
+              <polyline
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1"
+                fill="currentColor"
+                points="-5,-4 0,0 -5,4 -5,-4"
+              />
+            </marker>
+          </defs>
+        </svg>
+
         {/* Clean white background */}
         <Background color="#fafafa" gap={20} size={0.3} />
       </ReactFlow>

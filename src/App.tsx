@@ -158,59 +158,11 @@ function App() {
                 </ErrorBoundary>
               </div>
 
-              {/* Controls Panel - Top Left Overlay */}
+              {/* Variants Panel - Top Left Overlay */}
               <div style={{
                 position: 'absolute',
                 top: '20px',
                 left: '20px',
-                zIndex: 10
-              }}>
-                <div
-                  style={{
-                    backgroundColor: 'white',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    minWidth: '180px'
-                  }}
-                >
-                  {/* Controls List */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {/* Happy Path Toggle */}
-                    <button
-                      onClick={() => setShowHappyPath(!showHappyPath)}
-                      className={`github-btn ${showHappyPath ? 'active-green' : ''}`}
-                      style={{ width: '100%' }}
-                    >
-                      Show Happy Path
-                    </button>
-
-                    {/* Show Bottlenecks Toggle */}
-                    <button
-                      onClick={() => setShowBottlenecks(!showBottlenecks)}
-                      className={`github-btn ${showBottlenecks ? 'active-red' : ''}`}
-                      style={{ width: '100%' }}
-                    >
-                      Show Bottlenecks
-                    </button>
-
-                    {/* Reset Layout Button */}
-                    <button
-                      onClick={handleResetLayout}
-                      className="github-btn"
-                      style={{ width: '100%' }}
-                    >
-                      Reset Layout
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-
-              {/* Variants Panel - Top Right Overlay */}
-              <div style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
                 zIndex: 10
               }}>
                 <div
@@ -270,6 +222,69 @@ function App() {
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Controls Panel - Next to Variants (Center-Left) */}
+              <div style={{
+                position: 'absolute',
+                top: '20px',
+                left: '340px', // Right next to variants panel
+                zIndex: 10
+              }}>
+                <div
+                  style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    minWidth: '180px'
+                  }}
+                >
+                  {/* Controls List with Checkboxes */}
+                  <div className="variant-form">
+                    {/* Happy Path Checkbox */}
+                    <div>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={showHappyPath}
+                          onChange={() => setShowHappyPath(!showHappyPath)}
+                        />
+                        <div className="variant-name">
+                          Happy Path
+                        </div>
+                      </label>
+                    </div>
+
+                    {/* Bottlenecks Checkbox */}
+                    <div>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={showBottlenecks}
+                          onChange={() => setShowBottlenecks(!showBottlenecks)}
+                        />
+                        <div className="variant-name">
+                          Bottlenecks
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reset Layout Button - Top Right */}
+              <div style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                zIndex: 10
+              }}>
+                <button
+                  onClick={handleResetLayout}
+                  className="github-btn"
+                >
+                  Reset Layout
+                </button>
               </div>
             </div>
           </div>
