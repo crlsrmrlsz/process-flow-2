@@ -10,7 +10,7 @@ export interface LayoutOptions {
 }
 
 export const defaultLayoutOptions: LayoutOptions = {
-  direction: 'TB', // Top to Bottom (vertical flow)
+  direction: 'LR', // Left to Right (horizontal flow)
   nodeWidth: 150,
   nodeHeight: 80,
   nodeSpacing: 40,  // Reduced from 50
@@ -121,9 +121,9 @@ function calculateOptimalSpacingConfig(
   // Analyze graph complexity
   const complexity = analyzeGraphComplexity(nodes, edges);
 
-  // Base spacing calculations - reduced for more compact layout
-  let baseNodeSep = Math.max(maxWidth * 0.5, 60);
-  let baseRankSep = Math.max(avgWidth * 0.3, 80);
+  // Base spacing calculations - optimized for horizontal layout
+  let baseNodeSep = Math.max(maxWidth * 0.4, 80);  // Increased vertical spacing between nodes
+  let baseRankSep = Math.max(avgWidth * 0.6, 100); // Increased horizontal spacing between ranks
   let baseEdgeSep = Math.max(avgWidth * 0.15, 15);
 
   // Apply complexity-based multipliers
@@ -136,10 +136,10 @@ function calculateOptimalSpacingConfig(
   const ranksep = baseRankSep * depthMultiplier;
   const edgesep = baseEdgeSep * densityMultiplier;
 
-  // Ensure reasonable bounds - reduced ranges for more compact layout
+  // Ensure reasonable bounds - optimized for horizontal layout
   return {
-    nodesep: Math.min(Math.max(nodesep, 60), 250), // 60-250px range
-    ranksep: Math.min(Math.max(ranksep, 80), 180), // 80-180px range (shorter edges)
+    nodesep: Math.min(Math.max(nodesep, 80), 300), // 80-300px vertical spacing between nodes
+    ranksep: Math.min(Math.max(ranksep, 100), 250), // 100-250px horizontal spacing between ranks
     edgesep: Math.min(Math.max(edgesep, 15), 45)   // 15-45px range
   };
 }

@@ -124,8 +124,8 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
         markerEnd="url(#react-flow__arrowclosed)"
       />
 
-      {/* Mean time label - always visible, positioned further from edge */}
-      <g transform={`translate(${labelX + labelOffset.x + 25}, ${labelY + labelOffset.y - 15})`}>
+      {/* Mean time label - always visible, positioned for horizontal flow */}
+      <g transform={`translate(${labelX + labelOffset.x}, ${labelY + labelOffset.y - 20})`}>
         {/* Clean background without border */}
         <rect
           x={-12}
