@@ -26,8 +26,9 @@ import type { CustomEdgeData } from './CustomEdge';
 import type { Variant } from '../../types/Variant';
 import { applyDagreLayout, refineLayoutWithOverlapResolution, saveLayoutToSession, loadLayoutFromSession, detectOverlaps } from '../../utils/layoutUtils';
 import { aggregateVariants, type AggregatedVariant, type TotalFlowData } from '../../utils/variantAggregator';
+import { getExpectedTime, analyzeWorkerPerformance, type WorkerPerformanceAnalysis } from '../../utils/metricsCalculator';
 import { VariantSelectionPanel } from '../variant-panel/VariantSelectionPanel';
-import { HAPPY_PATH_CONFIG } from '../../constants/permitStates';
+import { HAPPY_PATH_CONFIG, HUMAN_STATES } from '../../constants/permitStates';
 
 interface ProcessFlowProps {
   variant: Variant[] | null;
@@ -197,6 +198,12 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       let sourceHandle = isBackwardEdge ? 'bottom' : 'right'; // Backward edges exit from bottom
       let targetHandle = isBackwardEdge ? 'bottom' : 'left';   // Backward edges enter from bottom
 
+      // Calculate expected time and worker performance for this transition
+      const expectedTime = getExpectedTime(transition.from, transition.to);
+      const workerPerformance = expectedTime && transition.performer_breakdown && HUMAN_STATES.includes(transition.to as any)
+        ? analyzeWorkerPerformance(transition.performer_breakdown, expectedTime)
+        : undefined;
+
       // Create single aggregated edge with smart handle selection
       variantEdges.push({
           id: transitionKey,
@@ -211,8 +218,10 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
             medianTime: transition.median_time_hours,
             meanTime: transition.mean_time_hours,
             isBottleneck,
+            expectedTime,
             contributingVariants: transition.contributing_variants,
             performer_breakdown: transition.performer_breakdown, // Include for splitting
+            workerPerformance,
             isHappyPath,
             showHappyPath: false, // Will be set by useEffect to avoid layout reset
             showBottlenecks: false // Will be set by useEffect to avoid layout reset

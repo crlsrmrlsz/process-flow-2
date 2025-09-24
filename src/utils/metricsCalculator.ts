@@ -1,6 +1,48 @@
 import type { ProcessCase } from '../types/EventLog';
 import type { Variant } from '../types/Variant';
 import type { DirectlyFollowsGraph } from '../types/DFG';
+import { TRANSITION_TIME_RANGES } from '../constants/permitStates';
+
+// Helper function to get expected time for a transition
+export function getExpectedTime(from: string, to: string): number | null {
+  const transitionKey = `${from}->${to}` as keyof typeof TRANSITION_TIME_RANGES;
+  const timeRange = TRANSITION_TIME_RANGES[transitionKey];
+  return timeRange ? timeRange.max : null; // Use max as the expected threshold
+}
+
+// Interface for worker performance analysis
+export interface WorkerPerformanceAnalysis {
+  workerId: string;
+  processCount: number;
+  meanTime: number;
+  isOverExpected: boolean;
+  percentageOver: number;
+}
+
+// Analyze individual worker performance against expected time
+export function analyzeWorkerPerformance(
+  performerBreakdown: Record<string, { count: number; median_time_hours: number; mean_time_hours: number }>,
+  expectedTime: number | null
+): WorkerPerformanceAnalysis[] {
+  if (!expectedTime || !performerBreakdown) {
+    return [];
+  }
+
+  return Object.entries(performerBreakdown).map(([workerId, data]) => {
+    const isOverExpected = data.mean_time_hours > expectedTime;
+    const percentageOver = expectedTime > 0
+      ? ((data.mean_time_hours - expectedTime) / expectedTime) * 100
+      : 0;
+
+    return {
+      workerId,
+      processCount: data.count,
+      meanTime: data.mean_time_hours,
+      isOverExpected,
+      percentageOver: Math.max(0, percentageOver) // Don't show negative percentages
+    };
+  });
+}
 
 export interface ProcessMetrics {
   caseMetrics: {
@@ -185,30 +227,52 @@ export function identifyBottlenecks(variants: Variant[]): Array<{
     affectedCases: number;
   }> = [];
 
-  // Collect all transition times for percentile calculation
-  const allTransitionTimes: number[] = [];
+  // Identify transition bottlenecks using expected time comparison
   for (const variant of variants) {
     for (const transition of variant.transitions) {
-      if (transition.median_time_hours > 0) {
-        allTransitionTimes.push(transition.median_time_hours);
+      const expectedTime = getExpectedTime(transition.from, transition.to);
+      let isBottleneck = false;
+      let reason = '';
+
+      if (expectedTime) {
+        // Use expected time with 1.2x multiplier as threshold for some tolerance
+        const threshold = expectedTime * 1.2;
+        const exceedsExpected = transition.mean_time_hours > threshold;
+        const isHighFrequency = variant.case_count >= 5; // At least 5 cases affected
+
+        if (exceedsExpected && isHighFrequency) {
+          isBottleneck = true;
+          reason = `Exceeds expected time (${transition.mean_time_hours.toFixed(1)}h vs expected max ${expectedTime.toFixed(1)}h)`;
+        }
+      } else {
+        // Fallback to percentile-based detection for transitions without expected times
+        // Calculate percentile threshold if needed
+        const allTransitionTimes: number[] = [];
+        for (const v of variants) {
+          for (const t of v.transitions) {
+            if (t.median_time_hours > 0) {
+              allTransitionTimes.push(t.median_time_hours);
+            }
+          }
+        }
+        allTransitionTimes.sort((a, b) => a - b);
+        const p90Threshold = allTransitionTimes[Math.floor(allTransitionTimes.length * 0.9)] || 0;
+
+        const isHighTime = transition.median_time_hours >= p90Threshold;
+        const isHighFrequency = variant.case_count >= 5;
+
+        if (isHighTime && isHighFrequency) {
+          isBottleneck = true;
+          reason = `High median time (${transition.median_time_hours.toFixed(1)}h) in 90th percentile`;
+        }
       }
-    }
-  }
-  allTransitionTimes.sort((a, b) => a - b);
-  const p90Threshold = allTransitionTimes[Math.floor(allTransitionTimes.length * 0.9)] || 0;
 
-  // Identify transition bottlenecks
-  for (const variant of variants) {
-    for (const transition of variant.transitions) {
-      const isHighTime = transition.median_time_hours >= p90Threshold;
-      const isHighFrequency = variant.case_count >= 10; // At least 10 cases affected
-
-      if (isHighTime && isHighFrequency) {
+      if (isBottleneck) {
         bottlenecks.push({
           type: 'transition',
           identifier: `${transition.from} → ${transition.to}`,
-          score: transition.median_time_hours,
-          reason: `High median time (${transition.median_time_hours.toFixed(1)}h) with significant frequency`,
+          score: transition.mean_time_hours,
+          reason,
           affectedCases: variant.case_count
         });
       }
