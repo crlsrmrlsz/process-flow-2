@@ -52,15 +52,18 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
   // Detect backward edge (target is to the left of source in horizontal flow)
   const isBackwardEdge = targetX < sourceX;
 
-  // Use bezier path with increased curvature for backward edges
+  // Use different handle positions for backward edges
+  const effectiveSourcePosition = isBackwardEdge ? 'bottom' : sourcePosition;
+  const effectiveTargetPosition = isBackwardEdge ? 'bottom' : targetPosition;
+
+  // Use standard bezier path with handle position override for backward edges
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY: offsetSourceY,
-    sourcePosition,
+    sourcePosition: effectiveSourcePosition,
     targetX,
     targetY: offsetTargetY,
-    targetPosition,
-    curvature: isBackwardEdge ? 0.8 : 0.25 // Much higher curvature for backward edges
+    targetPosition: effectiveTargetPosition
   });
 
   // Calculate label offset (smaller since path is already offset)
