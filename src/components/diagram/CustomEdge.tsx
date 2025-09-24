@@ -1,6 +1,6 @@
 import React from 'react';
 import type { EdgeProps } from 'reactflow';
-import { getBezierPath } from 'reactflow';
+import { getBezierPath, getSmoothStepPath } from 'reactflow';
 
 export interface CustomEdgeData {
   count: number;
@@ -49,14 +49,27 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
   const offsetSourceY = sourceY + edgeOffset;
   const offsetTargetY = targetY + edgeOffset;
 
-  const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY: offsetSourceY,
-    sourcePosition,
-    targetX,
-    targetY: offsetTargetY,
-    targetPosition
-  });
+  // Detect backward edge (target is to the left of source in horizontal flow)
+  const isBackwardEdge = targetX < sourceX;
+
+  // Use different path types for forward vs backward edges
+  const [edgePath, labelX, labelY] = isBackwardEdge
+    ? getSmoothStepPath({
+        sourceX,
+        sourceY: offsetSourceY,
+        sourcePosition,
+        targetX,
+        targetY: offsetTargetY,
+        targetPosition
+      })
+    : getBezierPath({
+        sourceX,
+        sourceY: offsetSourceY,
+        sourcePosition,
+        targetX,
+        targetY: offsetTargetY,
+        targetPosition
+      });
 
   // Calculate label offset (smaller since path is already offset)
   const labelOffset = React.useMemo(() => {

@@ -190,8 +190,9 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       let sourceHandle = 'right'; // Default: exit from right
       let targetHandle = 'left';   // Default: enter from left
 
-      // For horizontal flow, edges naturally flow from left to right
-      // ReactFlow will handle edge routing with the actual node positions after layout
+      // Note: Backward edge detection is handled in CustomEdge component
+      // where actual node positions are available after Dagre layout
+      // getSmoothStepPath will provide better visibility for backward edges
 
       // Create single aggregated edge with smart handle selection
       variantEdges.push({
