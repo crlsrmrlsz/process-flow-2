@@ -118,12 +118,18 @@ function App() {
             <h1 className="text-3xl font-bold text-gray-900 mb-3">
               Process Mining Demo
             </h1>
-            <div className="text-base text-gray-600 max-w-3xl mx-auto leading-normal space-y-3">
+            <div className="max-w-4xl mx-auto leading-normal space-y-3" style={{
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#374151',
+              textAlign: 'justify'
+            }}>
               <p>
-                Explore restaurant permit applications from submission through health inspection to final approval. Applications flow through intake validation, reviewer assignment, detailed review, and may loop back for additional information before proceeding to health inspection and final decision.
+                <strong>Process description:</strong> Explore restaurant permit applications from submission through health inspection to final approval. Applications flow through intake validation, reviewer assignment, detailed review, and may loop back for additional information before proceeding to health inspection and final decision.
               </p>
               <p>
-                Visualize workflow patterns, select variants to see unique paths, and analyze efficiency. Use 'Happy Path' for optimal routes (green) and 'Bottlenecks' for delays (red).
+                <strong>How to use:</strong> Visualize workflow patterns, select variants to see unique paths, and analyze efficiency. Use 'Happy Path' for optimal routes (green) and 'Bottlenecks' for delays (red).
               </p>
             </div>
           </div>
