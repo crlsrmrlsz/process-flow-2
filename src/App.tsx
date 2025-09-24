@@ -126,7 +126,7 @@ function App() {
               textAlign: 'justify'
             }}>
               <p>
-                <strong>Process description:</strong> This interactive diagram visualizes real restaurant permit application workflows using process mining techniques. Each path represents how applications move from initial submission through city review, documentation requests, health inspections, and final approval decisions. The data reveals different process variants based on application complexity, compliance issues, and reviewer patterns.
+                <strong>Process description:</strong> This interactive diagram visualizes real restaurant permit application workflows using process mining techniques. Each path represents how applications move from initial submission through city review, documentation requests, health inspections, and final approval decisions. The variants and flow patterns are automatically discovered from event log data.
               </p>
               <p>
                 <strong>How to use:</strong> Select process variants from the right panel to compare different approval paths. Toggle 'Show Happy Path' to highlight the most efficient route in green, or enable 'Show Bottlenecks' to identify delays and inefficiencies in red. Drag nodes to customize the layout for better analysis. Each edge displays average processing time between steps.
