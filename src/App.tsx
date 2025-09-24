@@ -126,10 +126,10 @@ function App() {
               textAlign: 'justify'
             }}>
               <p>
-                <strong>Process description:</strong> Explore restaurant permit applications from submission through health inspection to final approval. Applications flow through intake validation, reviewer assignment, detailed review, and may loop back for additional information before proceeding to health inspection and final decision.
+                <strong>Process description:</strong> This interactive diagram visualizes real restaurant permit application workflows using process mining techniques. Each path represents how applications move from initial submission through city review, documentation requests, health inspections, and final approval decisions. The data reveals different process variants based on application complexity, compliance issues, and reviewer patterns.
               </p>
               <p>
-                <strong>How to use:</strong> Visualize workflow patterns, select variants to see unique paths, and analyze efficiency. Use 'Happy Path' for optimal routes (green) and 'Bottlenecks' for delays (red).
+                <strong>How to use:</strong> Select process variants from the right panel to compare different approval paths. Toggle 'Show Happy Path' to highlight the most efficient route in green, or enable 'Show Bottlenecks' to identify delays and inefficiencies in red. Drag nodes to customize the layout for better analysis. Each edge displays average processing time between steps.
               </p>
             </div>
           </div>
