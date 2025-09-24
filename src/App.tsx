@@ -14,6 +14,7 @@ function App() {
   const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
   const [showHappyPath, setShowHappyPath] = useState(false);
   const [showBottlenecks, setShowBottlenecks] = useState(false);
+  const [showWorkerInfo, setShowWorkerInfo] = useState(false);
   const [resetLayoutTrigger, setResetLayoutTrigger] = useState(0);
 
   // Helper function to get proper variant display name
@@ -164,6 +165,7 @@ function App() {
                     onVariantSelect={handleVariantSelect}
                     showHappyPath={showHappyPath}
                     showBottlenecks={showBottlenecks}
+                    showWorkerInfo={showWorkerInfo}
                     onResetLayout={handleResetLayout}
                     resetLayoutTrigger={resetLayoutTrigger}
                     totalFlowData={totalFlowData}
@@ -278,6 +280,20 @@ function App() {
                         />
                         <div className="variant-name">
                           Bottlenecks
+                        </div>
+                      </label>
+                    </div>
+
+                    {/* Per Worker Info Checkbox */}
+                    <div>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={showWorkerInfo}
+                          onChange={() => setShowWorkerInfo(!showWorkerInfo)}
+                        />
+                        <div className="variant-name">
+                          Per Worker Info
                         </div>
                       </label>
                     </div>

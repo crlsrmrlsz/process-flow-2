@@ -136,115 +136,48 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
         markerEnd="url(#react-flow__arrowclosed)"
       />
 
-      {/* Enhanced edge label - shows worker performance for human tasks */}
-      {(() => {
-        const hasWorkers = workerPerformance && workerPerformance.length > 0;
-        const showExpectedTime = expectedTime && showBottlenecks && isBottleneck;
-
-        if (hasWorkers) {
-          // Calculate dynamic dimensions for worker performance display
-          const workerCount = workerPerformance.length;
-          const baseWidth = 120;
-          const baseHeight = 20;
-          const workerLineHeight = 16;
-          const totalHeight = baseHeight + (workerCount * workerLineHeight);
-          const totalWidth = Math.max(baseWidth, 160); // Ensure minimum width for readability
-
-          return (
-            <g transform={`translate(${labelX + labelOffset.x}, ${labelY + labelOffset.y - totalHeight/2})`}>
-              {/* Background for entire worker performance panel */}
-              <rect
-                x={-totalWidth / 2}
-                y={-10}
-                width={totalWidth}
-                height={totalHeight}
-                rx={6}
-                fill="white"
-                stroke="#e5e7eb"
-                strokeWidth={1}
-                className="drop-shadow-md"
-              />
-
-              {/* Main transition info header */}
-              <text
-                x={0}
-                y={5}
-                textAnchor="middle"
-                fontSize={11}
-                fontWeight="700"
-                fill="#374151"
-                className="pointer-events-none"
-              >
-                {formatTime(meanTime)}
-                {expectedTime && ` (exp: ${formatTime(expectedTime)})`}
-              </text>
-
-              {/* Worker performance list */}
-              {workerPerformance.map((worker, index) => {
-                const yPos = 18 + (index * workerLineHeight);
-                const workerColor = worker.isOverExpected ? '#ef4444' : '#22c55e'; // Red for over, green for under
-
-                return (
-                  <g key={worker.workerId}>
-                    {/* Worker color indicator */}
-                    <circle
-                      cx={-totalWidth/2 + 10}
-                      cy={yPos}
-                      r={3}
-                      fill={workerColor}
-                    />
-
-                    {/* Worker info text */}
-                    <text
-                      x={-totalWidth/2 + 20}
-                      y={yPos + 2}
-                      fontSize={9}
-                      fontWeight="500"
-                      fill="#374151"
-                      className="pointer-events-none font-mono"
-                    >
-                      {worker.workerId.replace(/^(clerk_|reviewer_|inspector_)/, '')}
-                      ({worker.processCount}x, {formatTime(worker.meanTime)})
-                      {worker.isOverExpected && ` +${worker.percentageOver.toFixed(0)}%`}
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-          );
-        } else {
-          // Standard label for transitions without worker data
+      {/* Clean edge label - shows mean time or expected time comparison for bottlenecks */}
+      <g transform={`translate(${labelX + labelOffset.x}, ${labelY + labelOffset.y - 20})`}>
+        {(() => {
+          // Determine label content based on bottleneck status
+          const showExpectedTime = showBottlenecks && isBottleneck && expectedTime;
           const labelText = showExpectedTime
-            ? `${formatTime(meanTime)} (exp: ${formatTime(expectedTime)})`
+            ? `mean: ${formatTime(meanTime)}, expected: ${formatTime(expectedTime)}`
             : formatTime(meanTime);
-          const labelWidth = labelText.length * 6 + 10;
+
+          // Calculate background width based on text length
+          const baseWidth = showExpectedTime ? labelText.length * 6.5 : 24;
+          const width = Math.max(baseWidth, 24);
 
           return (
-            <g transform={`translate(${labelX + labelOffset.x}, ${labelY + labelOffset.y - 20})`}>
+            <>
+              {/* Dynamic background based on content */}
               <rect
-                x={-labelWidth / 2}
+                x={-width / 2}
                 y={-7}
-                width={labelWidth}
+                width={width}
                 height={14}
                 rx={3}
                 fill="white"
                 className="drop-shadow-sm"
               />
+
+              {/* Label text */}
               <text
                 x={0}
                 y={2}
                 textAnchor="middle"
-                fontSize={12}
+                fontSize={showExpectedTime ? 10 : 12}
                 fontWeight="600"
                 fill="#374151"
                 className="pointer-events-none font-mono"
               >
                 {labelText}
               </text>
-            </g>
+            </>
           );
-        }
-      })()}
+        })()}
+      </g>
 
 
       {/* Hover tooltip area (invisible but larger for better interaction) */}

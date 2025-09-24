@@ -28,6 +28,7 @@ import { applyDagreLayout, refineLayoutWithOverlapResolution, saveLayoutToSessio
 import { aggregateVariants, type AggregatedVariant, type TotalFlowData } from '../../utils/variantAggregator';
 import { getExpectedTime, analyzeWorkerPerformance, type WorkerPerformanceAnalysis } from '../../utils/metricsCalculator';
 import { VariantSelectionPanel } from '../variant-panel/VariantSelectionPanel';
+import { WorkerInfoPanel } from './WorkerInfoPanel';
 import { HAPPY_PATH_CONFIG, HUMAN_STATES } from '../../constants/permitStates';
 
 interface ProcessFlowProps {
@@ -42,6 +43,7 @@ interface ProcessFlowProps {
   onVariantSelect: (variantId: string) => void;
   showHappyPath: boolean;
   showBottlenecks: boolean;
+  showWorkerInfo: boolean;
   onResetLayout?: () => void;
   resetLayoutTrigger?: number;
   totalFlowData?: TotalFlowData | null;
@@ -63,6 +65,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   onVariantSelect,
   showHappyPath,
   showBottlenecks,
+  showWorkerInfo,
   onResetLayout,
   resetLayoutTrigger,
   totalFlowData
@@ -430,8 +433,43 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     );
   }
 
+  // Calculate worker info panels when showWorkerInfo is enabled
+  const workerPanels = React.useMemo(() => {
+    if (!showWorkerInfo) return [];
+
+    const panels: Array<{
+      id: string;
+      workerId: string;
+      processCount: number;
+      meanTime: number;
+      isOverExpected: boolean;
+      position: { x: number; y: number };
+    }> = [];
+
+    edges.forEach((edge, edgeIndex) => {
+      if (edge.data?.workerPerformance) {
+        edge.data.workerPerformance.forEach((worker: any, workerIndex: number) => {
+          // Calculate position near the edge - simplified for now
+          const baseX = 100 + (edgeIndex * 120); // Spread horizontally
+          const baseY = 150 + (workerIndex * 60); // Stack vertically per edge
+
+          panels.push({
+            id: `${edge.id}-${worker.workerId}`,
+            workerId: worker.workerId,
+            processCount: worker.processCount,
+            meanTime: worker.meanTime,
+            isOverExpected: worker.isOverExpected,
+            position: { x: baseX, y: baseY }
+          });
+        });
+      }
+    });
+
+    return panels;
+  }, [showWorkerInfo, edges]);
+
   return (
-    <div className="h-full">
+    <div className="h-full relative">
       <ReactFlowProvider>
         <ProcessFlowInner
           nodes={nodes}
@@ -446,6 +484,18 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           edgeTypes={edgeTypes}
           fitViewRef={fitViewRef}
         />
+
+        {/* Render worker info panels */}
+        {workerPanels.map((panel) => (
+          <WorkerInfoPanel
+            key={panel.id}
+            workerId={panel.workerId}
+            processCount={panel.processCount}
+            meanTime={panel.meanTime}
+            isOverExpected={panel.isOverExpected}
+            position={panel.position}
+          />
+        ))}
       </ReactFlowProvider>
     </div>
   );
