@@ -186,13 +186,15 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       // Check if this transition is part of the happy path
       const isHappyPath = happyPathTransitions.includes(transitionKey);
 
-      // Handle selection for horizontal flow
-      let sourceHandle = 'right'; // Default: exit from right
-      let targetHandle = 'left';   // Default: enter from left
+      // Detect backward edges based on actual process flow sequence
+      const processSequence = ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'request_additional_info', 'applicant_provided_info', 'health_inspection', 'approved', 'rejected', 'withdrawn'];
+      const sourceIndex = processSequence.indexOf(transition.from);
+      const targetIndex = processSequence.indexOf(transition.to);
+      const isBackwardEdge = sourceIndex > targetIndex && sourceIndex !== -1 && targetIndex !== -1;
 
-      // Note: Backward edge detection is handled in CustomEdge component
-      // where actual node positions are available after Dagre layout
-      // getSmoothStepPath will provide better visibility for backward edges
+      // Handle selection for horizontal flow
+      let sourceHandle = isBackwardEdge ? 'bottom' : 'right'; // Backward edges exit from bottom
+      let targetHandle = isBackwardEdge ? 'bottom' : 'left';   // Backward edges enter from bottom
 
       // Create single aggregated edge with smart handle selection
       variantEdges.push({

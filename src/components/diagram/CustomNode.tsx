@@ -107,6 +107,16 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
               borderRadius: '50%'
             }}
           />
+          <Handle
+            type="target"
+            position={Position.Bottom}
+            id="bottom"
+            className="w-3 h-3 bg-white border-2 border-gray-500"
+            style={{
+              bottom: -6,
+              borderRadius: '50%'
+            }}
+          />
         </>
       )}
 
