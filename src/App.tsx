@@ -168,87 +168,33 @@ function App() {
                   }}
                 >
                   {/* Controls List */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {/* Happy Path Toggle */}
-                    <div
+                    <button
                       onClick={() => setShowHappyPath(!showHappyPath)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '4px 6px',
-                        borderRadius: '4px',
-                        backgroundColor: showHappyPath ? '#eff6ff' : '#e5e7eb',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '16px',
-                        minHeight: '20px'
-                      }}
+                      className={`github-btn ${showHappyPath ? 'active-green' : ''}`}
+                      style={{ width: '100%' }}
                     >
-                      {/* Label */}
-                      <div style={{
-                        flex: 1,
-                        fontWeight: '500',
-                        color: showHappyPath ? '#1e40af' : '#374151',
-                        textAlign: 'center'
-                      }}>
-                        Show Happy Path
-                      </div>
-                    </div>
+                      Show Happy Path
+                    </button>
 
                     {/* Show Bottlenecks Toggle */}
-                    <div
+                    <button
                       onClick={() => setShowBottlenecks(!showBottlenecks)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '4px 6px',
-                        borderRadius: '4px',
-                        backgroundColor: showBottlenecks ? '#fef2f2' : '#e5e7eb',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '16px',
-                        minHeight: '20px'
-                      }}
+                      className={`github-btn ${showBottlenecks ? 'active-red' : ''}`}
+                      style={{ width: '100%' }}
                     >
-                      {/* Label */}
-                      <div style={{
-                        flex: 1,
-                        fontWeight: '500',
-                        color: showBottlenecks ? '#dc2626' : '#374151',
-                        textAlign: 'center'
-                      }}>
-                        Show Bottlenecks
-                      </div>
-                    </div>
+                      Show Bottlenecks
+                    </button>
 
                     {/* Reset Layout Button */}
-                    <div
+                    <button
                       onClick={handleResetLayout}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '4px 6px',
-                        borderRadius: '4px',
-                        backgroundColor: '#e5e7eb',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '16px',
-                        minHeight: '20px'
-                      }}
+                      className="github-btn"
+                      style={{ width: '100%' }}
                     >
-                      {/* Label */}
-                      <div style={{
-                        flex: 1,
-                        fontWeight: '500',
-                        color: '#374151',
-                        textAlign: 'center'
-                      }}>
-                        Reset Layout
-                      </div>
-                    </div>
+                      Reset Layout
+                    </button>
                   </div>
                 </div>
               </div>
@@ -281,7 +227,7 @@ function App() {
                   </div>
 
                   {/* Variant List - Minimal Design */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {variants.length === 0 ? (
                       <div style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', padding: '16px 0' }}>
                         Loading variants...
@@ -294,20 +240,16 @@ function App() {
                         const displayName = variant.variant_id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
                         return (
-                          <div
+                          <button
                             key={variant.variant_id}
                             onClick={() => handleVariantSelect(variant.variant_id)}
+                            className={`github-btn ${isSelected ? 'active-blue' : ''}`}
                             style={{
+                              width: '100%',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '6px',
-                              padding: '4px 6px',
-                              borderRadius: '4px',
-                              backgroundColor: isSelected ? '#eff6ff' : '#e5e7eb',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              fontSize: '16px',
-                              minHeight: '20px'
+                              gap: '8px',
+                              justifyContent: 'flex-start'
                             }}
                           >
                             {/* Number */}
@@ -317,11 +259,11 @@ function App() {
                               justifyContent: 'center',
                               width: '18px',
                               height: '18px',
-                              borderRadius: '2px',
-                              fontSize: '12px',
+                              borderRadius: '3px',
+                              fontSize: '11px',
                               fontWeight: 'bold',
-                              backgroundColor: isSelected ? '#3b82f6' : '#d1d5db',
-                              color: isSelected ? 'white' : '#374151',
+                              backgroundColor: isSelected ? '#3b82f6' : '#6b7280',
+                              color: 'white',
                               flexShrink: 0
                             }}>
                               {index + 1}
@@ -331,10 +273,10 @@ function App() {
                             <div style={{
                               flex: 1,
                               fontWeight: '500',
-                              color: isSelected ? '#1e40af' : '#374151',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
+                              whiteSpace: 'nowrap',
+                              textAlign: 'left'
                             }}>
                               {displayName}
                             </div>
@@ -342,14 +284,14 @@ function App() {
                             {/* Percentage */}
                             <div style={{
                               fontWeight: 'bold',
-                              color: isSelected ? '#1e40af' : '#374151',
                               flexShrink: 0,
-                              minWidth: '30px',
-                              textAlign: 'right'
+                              minWidth: '35px',
+                              textAlign: 'right',
+                              fontSize: '12px'
                             }}>
                               {percentage}%
                             </div>
-                          </div>
+                          </button>
                         );
                       })
                     )}
