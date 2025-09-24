@@ -90,112 +90,42 @@ html, body, #root {
   color: #1e40af;
 }
 
-/* Custom Checkbox styling for variants */
+/* Simple Checkbox styling for variants */
 .variant-form {
-  --_clr-primary: #666;
-  --_clr-hover: #f33195;
-  --_clr-checked: #127acf;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   font-size: 14px;
   font-weight: 500;
 }
-.variant-form > div {
-  --_clr-current: var(--_clr-primary);
 
+.variant-form > div {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.15s ease-in-out;
+  gap: 8px;
+  margin-bottom: 4px;
 }
-.variant-form > div:hover {
-  background-color: rgba(243, 244, 246, 0.5);
-}
-.variant-form > div + div {
-  margin-block-start: 0.5rem;
-}
+
 .variant-form label {
   cursor: pointer;
-  color: var(--_clr-current);
-  transition: color 150ms ease-in-out;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 8px;
   width: 100%;
   user-select: none;
   -webkit-user-select: none;
+  color: #374151;
 }
 
-/* styled checkbox */
+/* Plain checkbox */
 .variant-form input[type="checkbox"] {
-  appearance: none;
-  outline: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  aspect-ratio: 1;
-  padding: 0.25rem;
-  background: transparent;
-  border: 1px solid var(--_clr-current);
-  border-radius: 2px;
-  display: grid;
-  place-content: center;
   cursor: pointer;
   flex-shrink: 0;
 }
-.variant-form input[type="checkbox"]::after {
-  content: "\2714";
-  opacity: 0;
-  transition: opacity 150ms ease-in-out;
-  color: var(--_clr-checked);
-  font-size: inherit;
-  font-family: inherit;
-}
 
-.variant-form label:hover,
-.variant-form input[type="checkbox"]:focus-visible,
-.variant-form input[type="checkbox"]:focus-visible + .label-content,
-.variant-form input[type="checkbox"]:hover,
-.variant-form input[type="checkbox"]:hover + .label-content {
-  --_clr-current: var(--_clr-hover);
-}
-.variant-form input[type="checkbox"]:focus-visible::after,
-.variant-form input[type="checkbox"]:hover::after {
-  opacity: 0.5;
-  color: var(--_clr-hover);
-}
-
-.variant-form input[type="checkbox"]:checked + .label-content,
-.variant-form input[type="checkbox"]:checked:not(:hover) {
-  --_clr-current: var(--_clr-checked);
-}
-.variant-form input[type="checkbox"]:checked::after {
-  opacity: 1;
-}
-
-.label-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.variant-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  font-size: 11px;
+.variant-percentage {
   font-weight: bold;
-  background-color: #6b7280;
-  color: white;
-  flex-shrink: 0;
-}
-
-.variant-form input[type="checkbox"]:checked + .label-content .variant-number {
-  background-color: #127acf;
+  color: #6b7280;
+  font-size: 12px;
+  min-width: 35px;
 }
 
 .variant-name {
@@ -204,12 +134,4 @@ html, body, #root {
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
-}
-
-.variant-percentage {
-  font-weight: bold;
-  flex-shrink: 0;
-  min-width: 35px;
-  text-align: right;
-  font-size: 12px;
 }

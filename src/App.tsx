@@ -247,21 +247,15 @@ function App() {
                                 checked={isSelected}
                                 onChange={() => handleVariantSelect(variant.variant_id)}
                               />
-                              <div className="label-content">
-                                {/* Number */}
-                                <span className="variant-number">
-                                  {index + 1}
-                                </span>
 
-                                {/* Name */}
-                                <div className="variant-name">
-                                  {displayName}
-                                </div>
+                              {/* Percentage first */}
+                              <div className="variant-percentage">
+                                {percentage}%
+                              </div>
 
-                                {/* Percentage */}
-                                <div className="variant-percentage">
-                                  {percentage}%
-                                </div>
+                              {/* Name */}
+                              <div className="variant-name">
+                                {displayName}
                               </div>
                             </label>
                           </div>
