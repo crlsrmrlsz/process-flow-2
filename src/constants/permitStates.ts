@@ -37,7 +37,7 @@ export const VARIANT_DEFINITIONS = {
   info_loop: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'request_additional_info', 'applicant_provided_info', 'review_in_progress', 'health_inspection', 'approved'] as PermitState[],
     probability: 0.25,
-    name: 'Info Loop'
+    name: 'Request More Info'
   },
   rejected: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'health_inspection', 'rejected'] as PermitState[],

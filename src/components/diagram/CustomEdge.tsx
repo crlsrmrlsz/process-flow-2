@@ -89,10 +89,10 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
     return selected ? 3 : 2; // Increased base thickness for better visibility
   };
 
-  // Design guide color scheme with pastel bottleneck colors
+  // Design guide color scheme with more prominent colors
   const getStrokeColor = () => {
-    if (showBottlenecks && isBottleneck) return '#fb7185'; // Pastel pink-red for bottlenecks
-    if (showHappyPath && isHappyPath) return '#4ade80'; // Green-400 for happy path
+    if (showBottlenecks && isBottleneck) return '#ef4444'; // Bright red for bottlenecks
+    if (showHappyPath && isHappyPath) return '#22c55e'; // Bright green for happy path
     if (selected) return '#4f46e5'; // Indigo-600 when selected
     return '#9ca3af'; // Gray-400 default
   };
