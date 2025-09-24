@@ -81,40 +81,36 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
             type="target"
             position={Position.Top}
             id="top"
-            className="w-3 h-3 bg-white border-2 border-gray-500"
             style={{
-              top: -6,
-              borderRadius: '50%'
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
           <Handle
             type="target"
             position={Position.Left}
             id="left"
-            className="w-3 h-3 bg-white border-2 border-gray-500"
             style={{
-              left: -6,
-              borderRadius: '50%'
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
           <Handle
             type="target"
             position={Position.Right}
             id="right"
-            className="w-3 h-3 bg-white border-2 border-gray-500"
             style={{
-              right: -6,
-              borderRadius: '50%'
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
           <Handle
             type="target"
             position={Position.Bottom}
             id="bottom"
-            className="w-3 h-3 bg-white border-2 border-gray-500"
             style={{
-              bottom: -6,
-              borderRadius: '50%'
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
         </>
@@ -127,30 +123,27 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
             type="source"
             position={Position.Bottom}
             id="bottom"
-            className="w-3 h-3 bg-white border-2 border-gray-500"
             style={{
-              bottom: -6,
-              borderRadius: '50%'
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
           <Handle
             type="source"
             position={Position.Left}
             id="left"
-            className="w-3 h-3 bg-white border-2 border-gray-500"
             style={{
-              left: -6,
-              borderRadius: '50%'
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
           <Handle
             type="source"
             position={Position.Right}
             id="right"
-            className="w-3 h-3 bg-white border-2 border-gray-500"
             style={{
-              right: -6,
-              borderRadius: '50%'
+              opacity: 0,
+              pointerEvents: 'none'
             }}
           />
         </>
