@@ -226,8 +226,8 @@ function App() {
                     Process Variants ({variants.length})
                   </div>
 
-                  {/* Variant List - Minimal Design */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {/* Variant List - Checkbox Design */}
+                  <div className="variant-form">
                     {variants.length === 0 ? (
                       <div style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', padding: '16px 0' }}>
                         Loading variants...
@@ -240,58 +240,31 @@ function App() {
                         const displayName = variant.variant_id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
                         return (
-                          <button
-                            key={variant.variant_id}
-                            onClick={() => handleVariantSelect(variant.variant_id)}
-                            className={`github-btn ${isSelected ? 'active-blue' : ''}`}
-                            style={{
-                              width: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              justifyContent: 'flex-start'
-                            }}
-                          >
-                            {/* Number */}
-                            <span style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: '18px',
-                              height: '18px',
-                              borderRadius: '3px',
-                              fontSize: '11px',
-                              fontWeight: 'bold',
-                              backgroundColor: isSelected ? '#3b82f6' : '#6b7280',
-                              color: 'white',
-                              flexShrink: 0
-                            }}>
-                              {index + 1}
-                            </span>
+                          <div key={variant.variant_id}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleVariantSelect(variant.variant_id)}
+                              />
+                              <div className="label-content">
+                                {/* Number */}
+                                <span className="variant-number">
+                                  {index + 1}
+                                </span>
 
-                            {/* Name */}
-                            <div style={{
-                              flex: 1,
-                              fontWeight: '500',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              textAlign: 'left'
-                            }}>
-                              {displayName}
-                            </div>
+                                {/* Name */}
+                                <div className="variant-name">
+                                  {displayName}
+                                </div>
 
-                            {/* Percentage */}
-                            <div style={{
-                              fontWeight: 'bold',
-                              flexShrink: 0,
-                              minWidth: '35px',
-                              textAlign: 'right',
-                              fontSize: '12px'
-                            }}>
-                              {percentage}%
-                            </div>
-                          </button>
+                                {/* Percentage */}
+                                <div className="variant-percentage">
+                                  {percentage}%
+                                </div>
+                              </div>
+                            </label>
+                          </div>
                         );
                       })
                     )}
