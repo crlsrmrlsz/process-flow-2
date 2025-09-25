@@ -224,7 +224,8 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           performer_breakdown: transition.performer_breakdown, // Include for splitting
           isHappyPath,
           showHappyPath, // Use actual current state
-          showBottlenecks // Use actual current state
+          showBottlenecks, // Use actual current state
+          isBackward // Pass backward edge flag for custom routing
         },
         // Add handle specification for backward edges
         ...(isBackward && {

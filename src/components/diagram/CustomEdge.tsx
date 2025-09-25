@@ -21,6 +21,7 @@ export interface CustomEdgeData {
   isHappyPath?: boolean;
   showHappyPath?: boolean;
   showBottlenecks?: boolean;
+  isBackward?: boolean; // Indicates if this edge should use left-side routing with high curvature
 }
 
 export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
@@ -50,18 +51,36 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
   const offsetSourceY = sourceY + edgeOffset;
   const offsetTargetY = targetY + edgeOffset;
 
-  // Use standard bezier path
-  const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY: offsetSourceY,
-    sourcePosition,
-    targetX,
-    targetY: offsetTargetY,
-    targetPosition
-  });
+  // Create custom path for backward edges or use standard bezier path
+  const [edgePath, labelX, labelY] = React.useMemo(() => {
+    if (data?.isBackward) {
+      // Create custom curved path for backward edges to avoid node overlap
+      const midX = Math.min(sourceX, targetX) - 100; // Curve to the left of both nodes
+      const midY = (offsetSourceY + offsetTargetY) / 2;
 
-  // Detect backward edge (target is to the left of source in horizontal flow)
-  const isBackwardEdge = targetX < sourceX;
+      // Create smooth curved path with high curvature
+      const path = `M ${sourceX} ${offsetSourceY}
+                    C ${sourceX - 50} ${offsetSourceY}, ${midX} ${offsetSourceY}, ${midX} ${midY}
+                    C ${midX} ${offsetTargetY}, ${targetX - 50} ${offsetTargetY}, ${targetX} ${offsetTargetY}`;
+
+      const labelPosX = midX;
+      const labelPosY = midY;
+
+      return [path, labelPosX, labelPosY];
+    } else {
+      // Use standard bezier path for normal edges
+      return getBezierPath({
+        sourceX,
+        sourceY: offsetSourceY,
+        sourcePosition,
+        targetX,
+        targetY: offsetTargetY,
+        targetPosition
+      });
+    }
+  }, [data?.isBackward, sourceX, sourceY, targetX, targetY, offsetSourceY, offsetTargetY, sourcePosition, targetPosition]);
+
+  // Use the backward edge information from edge data instead of position-based detection
 
   // Calculate label offset (smaller since path is already offset)
   const labelOffset = React.useMemo(() => {
@@ -128,7 +147,7 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
           strokeLinecap: 'round', // Smooth line ends
           strokeLinejoin: 'round'
         }}
-        className={`react-flow__edge-path transition-all duration-300 ease-out ${isBackwardEdge ? 'backward-edge-path' : ''}`}
+        className={`react-flow__edge-path transition-all duration-300 ease-out ${data?.isBackward ? 'backward-edge-path' : ''}`}
         d={edgePath}
         markerEnd="url(#react-flow__arrowclosed)"
       />
