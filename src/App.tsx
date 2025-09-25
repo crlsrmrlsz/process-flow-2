@@ -122,67 +122,56 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Simplified Header - Just Title */}
+      {/* Header - Title with Subtitle */}
       <div className="w-full py-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Process Mining Demo
           </h1>
+          <p className="text-sm text-gray-600 mb-6">
+            Restaurant permit management, process flow extracted from raw log data.
+          </p>
         </div>
       </div>
 
-      {/* Full Width Main Content - Centered Diagram with Overlapping Panels */}
-      <div className="w-full bg-gray-50 pb-8">
-        {/* Centered Container for Diagram */}
-        <div className="flex justify-center">
-          {/* Main Container with Relative Positioning for Overlays */}
-          <div className="relative w-full max-w-7xl">
-            {/* Full Width Centered Diagram - Background Layer */}
-            <div className="relative h-[85vh] bg-white rounded-lg shadow-sm overflow-hidden mx-8" style={{ zIndex: 1 }}>
-                <ErrorBoundary>
-                  <ProcessFlow
-                    variant={selectedVariantData}
-                    bottlenecks={bottlenecks}
-                    variants={variants}
-                    selectedVariants={selectedVariants}
-                    onVariantSelect={handleVariantSelect}
-                    showHappyPath={showHappyPath}
-                    showBottlenecks={showBottlenecks}
-                    resetLayoutTrigger={resetLayoutTrigger}
-                    totalFlowData={totalFlowData}
-                  />
-                </ErrorBoundary>
-              </div>
+      {/* 70% Width Main Content - Centered Diagram with Overlapping Panels */}
+      <div className="w-[70%] mx-auto bg-gray-50 pb-8">
+        {/* Main Container with Relative Positioning for Overlays */}
+        <div className="relative w-full">
+          {/* Full Width Centered Diagram - Background Layer */}
+          <div className="relative h-[85vh] bg-white rounded-lg shadow-sm overflow-hidden mx-8" style={{ zIndex: 1 }}>
+            <ErrorBoundary>
+              <ProcessFlow
+                variant={selectedVariantData}
+                bottlenecks={bottlenecks}
+                variants={variants}
+                selectedVariants={selectedVariants}
+                onVariantSelect={handleVariantSelect}
+                showHappyPath={showHappyPath}
+                showBottlenecks={showBottlenecks}
+                resetLayoutTrigger={resetLayoutTrigger}
+                totalFlowData={totalFlowData}
+              />
+            </ErrorBoundary>
+          </div>
 
-              {/* Process Description + Variants Panel - Top Left Overlay */}
-              <div style={{
-                position: 'absolute',
-                top: '20px',
-                left: '20px',
-                zIndex: 10
-              }}>
-                <div
-                  style={{
-                    backgroundColor: 'white',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    minWidth: '240px',
-                    maxWidth: '280px'
-                  }}
+          {/* Variants + Controls Panel - Top Left Overlay */}
+          <div style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            zIndex: 10
+          }}>
+            <div
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                padding: '12px',
+                minWidth: '240px',
+                maxWidth: '280px'
+              }}
                 >
-                  {/* Process Description */}
-                  <div style={{
-                    fontSize: '11px',
-                    fontWeight: '500',
-                    color: '#374151',
-                    marginBottom: '16px',
-                    lineHeight: '1.4',
-                    textAlign: 'left'
-                  }}>
-                    <strong style={{ fontSize: '12px' }}>Process description:</strong> This interactive diagram visualizes real restaurant permit application workflows using process mining techniques. Each path represents how applications move from initial submission through city review, documentation requests, health inspections, and final approval decisions. The variants and flow patterns are automatically discovered from event log data.
-                  </div>
-
-                  {/* Header */}
+                  {/* Variants Header */}
                   <div style={{
                     fontSize: '14px',
                     fontWeight: 'bold',
@@ -229,27 +218,14 @@ function App() {
                       })
                     )}
                   </div>
-                </div>
-              </div>
 
-              {/* Controls + How-to-Use Panel - Top Right */}
-              <div style={{
-                position: 'absolute',
-                top: '96px', // Aligned with first variant checkbox
-                right: '20px',
-                zIndex: 10
-              }}>
-                <div
-                  style={{
-                    backgroundColor: 'white',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    minWidth: '240px',
-                    maxWidth: '280px',
-                    marginBottom: '10px'
-                  }}
-                >
-                  {/* Controls List with Checkboxes */}
+                  {/* Horizontal Separator */}
+                  <div style={{
+                    borderTop: '1px solid #e5e7eb',
+                    margin: '12px 0'
+                  }}></div>
+
+                  {/* Controls Section */}
                   <div className="variant-form">
                     {/* Happy Path Checkbox */}
                     <div>
@@ -280,34 +256,50 @@ function App() {
                     </div>
                   </div>
 
+                  {/* Reset Layout Button */}
+                  <button
+                    onClick={handleResetLayout}
+                    className="github-btn"
+                    style={{
+                      width: '100%',
+                      marginTop: '8px'
+                    }}
+                  >
+                    Reset Layout
+                  </button>
+            </div>
+          </div>
+
+          {/* How-to-Use Panel - Top Right */}
+          <div style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            zIndex: 10
+          }}>
+                <div
+                  style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    minWidth: '240px',
+                    maxWidth: '280px'
+                  }}
+                >
                   {/* How to Use Description */}
                   <div style={{
                     fontSize: '11px',
                     fontWeight: '500',
                     color: '#374151',
-                    marginTop: '16px',
                     lineHeight: '1.4',
                     textAlign: 'left'
                   }}>
                     <strong style={{ fontSize: '12px' }}>How to use:</strong> Select process variants from the left panel to compare different approval paths. Toggle 'Happy Path' to highlight the most efficient route in green, or enable 'Bottlenecks' to identify delays and inefficiencies in red. Drag nodes to customize the layout for better analysis. Each edge displays average processing time between steps.
                   </div>
-                </div>
-
-                {/* Reset Layout Button - Below Controls, same width as panel */}
-                <button
-                  onClick={handleResetLayout}
-                  className="github-btn"
-                  style={{
-                    width: '240px', // Match panel width
-                    maxWidth: '280px'
-                  }}
-                >
-                  Reset Layout
-                </button>
-              </div>
             </div>
           </div>
         </div>
+      </div>
     </div>
   );
 }
