@@ -31,23 +31,28 @@ export const AUTOMATIC_STATES: PermitState[] = [
 export const VARIANT_DEFINITIONS = {
   direct_approval: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'health_inspection', 'approved'] as PermitState[],
-    probability: 0.6,
+    probability: 0.58, // Reduced from 0.6 to accommodate new variant
     name: 'Direct Approval'
   },
   info_loop: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'request_additional_info', 'applicant_provided_info', 'review_in_progress', 'health_inspection', 'approved'] as PermitState[],
-    probability: 0.25,
+    probability: 0.24, // Reduced from 0.25 to accommodate new variant
     name: 'Request More Info'
   },
   rejected: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'health_inspection', 'rejected'] as PermitState[],
-    probability: 0.1,
+    probability: 0.1, // Unchanged
     name: 'Rejected at Final'
   },
   withdrawn: {
     sequence: ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'request_additional_info', 'withdrawn'] as PermitState[],
-    probability: 0.05,
+    probability: 0.05, // Unchanged
     name: 'Withdrawn'
+  },
+  early_rejection: {
+    sequence: ['submitted', 'intake_validation', 'rejected'] as PermitState[],
+    probability: 0.03, // 3% for early rejection due to minimal requirements not met
+    name: 'Early Rejection'
   }
 } as const;
 
@@ -97,6 +102,9 @@ export const HAPPY_PATH_CONFIG = {
 export const TRANSITION_TIME_RANGES = {
   // Initial processing - automated intake with some delay for batching
   'submitted->intake_validation': { min: 24, max: 48 }, // 1-2 days - workers process in batches
+
+  // Early rejection for applications not meeting minimal requirements
+  'intake_validation->rejected': { min: 24, max: 72 }, // 1-3 days - clerk reviews and rejects incomplete/invalid applications
 
   // Quick automated assignment
   'intake_validation->assigned_to_reviewer': { min: 0.1, max: 0.5 }, // 6-30 minutes - automatic assignment
