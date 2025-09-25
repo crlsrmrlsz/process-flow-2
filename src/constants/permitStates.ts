@@ -135,3 +135,27 @@ export const PERFORMERS = {
   reviewers: ['reviewer_001', 'reviewer_002', 'reviewer_003', 'reviewer_004'],
   health_inspectors: ['inspector_001', 'inspector_002', 'inspector_003']
 } as const;
+
+// Performer capability profiles for realistic variance
+export const PERFORMER_PROFILES = {
+  // Clerks - intake validation performance
+  clerk_001: { speed: 0.8, consistency: 0.9, capacity: 1.0 }, // Fast and consistent
+  clerk_002: { speed: 1.2, consistency: 0.7, capacity: 1.3 }, // Slower but handles more cases
+  clerk_003: { speed: 1.0, consistency: 1.0, capacity: 0.8 }, // Average performer
+
+  // Reviewers - main review process performance
+  reviewer_001: { speed: 0.7, consistency: 0.9, capacity: 0.9 }, // Fast but selective workload
+  reviewer_002: { speed: 1.4, consistency: 0.6, capacity: 1.5 }, // Slow and inconsistent, high workload
+  reviewer_003: { speed: 1.0, consistency: 1.0, capacity: 1.0 }, // Average performer
+  reviewer_004: { speed: 1.1, consistency: 0.8, capacity: 1.2 }, // Slightly slower, more cases
+
+  // Health inspectors - final inspection performance
+  inspector_001: { speed: 0.9, consistency: 0.8, capacity: 1.0 }, // Fast but variable
+  inspector_002: { speed: 1.3, consistency: 0.9, capacity: 1.1 }, // Slower but consistent
+  inspector_003: { speed: 1.0, consistency: 1.0, capacity: 0.9 }  // Average performer
+} as const;
+
+// Performance explanation:
+// - speed: Multiplier for processing time (0.8 = 20% faster, 1.2 = 20% slower)
+// - consistency: How variable their performance is (lower = more variance)
+// - capacity: Relative workload they handle (higher = more cases assigned)

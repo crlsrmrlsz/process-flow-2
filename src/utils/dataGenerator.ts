@@ -1,6 +1,6 @@
 import type { Event, EventLog } from '../types/EventLog';
 import type { PermitState } from '../constants/permitStates';
-import { VARIANT_DEFINITIONS, TRANSITION_TIME_RANGES, PERFORMERS, HUMAN_STATES } from '../constants/permitStates';
+import { VARIANT_DEFINITIONS, TRANSITION_TIME_RANGES, PERFORMERS, HUMAN_STATES, PERFORMER_PROFILES } from '../constants/permitStates';
 
 export interface GeneratorConfig {
   totalCases: number;
@@ -33,9 +33,27 @@ class SeededRandom {
   }
 }
 
+// Workload tracking for realistic performer assignment
+interface PerformerWorkload {
+  caseCount: number;
+  totalTime: number;
+  fatigueLevel: number;
+}
+
 export function generateEventLog(config: GeneratorConfig): EventLog {
   const rng = new SeededRandom(config.seed);
   const events: Event[] = [];
+
+  // Initialize workload tracking for all performers
+  const performerWorkloads = new Map<string, PerformerWorkload>();
+  const allPerformers = [...PERFORMERS.clerks, ...PERFORMERS.reviewers, ...PERFORMERS.health_inspectors];
+  allPerformers.forEach(performer => {
+    performerWorkloads.set(performer, {
+      caseCount: 0,
+      totalTime: 0,
+      fatigueLevel: 0
+    });
+  });
 
   // Calculate variant distribution
   const variants = Object.entries(VARIANT_DEFINITIONS);
@@ -64,7 +82,7 @@ export function generateEventLog(config: GeneratorConfig): EventLog {
     }
 
     const [, variantDef] = selectedVariant;
-    const caseEvents = generateCaseEvents(caseId, variantDef.sequence, rng);
+    const caseEvents = generateCaseEvents(caseId, variantDef.sequence, rng, performerWorkloads);
     events.push(...caseEvents);
   }
 
@@ -81,7 +99,97 @@ export function generateEventLog(config: GeneratorConfig): EventLog {
   };
 }
 
-function generateCaseEvents(caseId: string, sequence: PermitState[], rng: SeededRandom): Event[] {
+// Enhanced performer selection based on workload and capacity
+function selectPerformerWithWorkload(
+  performers: readonly string[],
+  rng: SeededRandom,
+  workloads: Map<string, PerformerWorkload>
+): string {
+  // Calculate selection weights based on capacity and inverse workload
+  const weights: number[] = [];
+  let totalWeight = 0;
+
+  for (const performer of performers) {
+    const profile = PERFORMER_PROFILES[performer as keyof typeof PERFORMER_PROFILES];
+    const workload = workloads.get(performer)!;
+
+    // Higher capacity performers get more cases, but diminishing returns with high workload
+    const capacityFactor = profile.capacity;
+    const workloadPenalty = Math.max(0.3, 1 - (workload.caseCount / 100)); // Diminishing capacity
+    const weight = capacityFactor * workloadPenalty;
+
+    weights.push(weight);
+    totalWeight += weight;
+  }
+
+  // Select performer based on weighted probabilities
+  const rand = rng.next() * totalWeight;
+  let cumulative = 0;
+
+  for (let i = 0; i < performers.length; i++) {
+    cumulative += weights[i];
+    if (rand <= cumulative) {
+      return performers[i];
+    }
+  }
+
+  return performers[performers.length - 1];
+}
+
+// Calculate realistic processing time with performer variance and bottlenecks
+function calculateProcessingTime(
+  transitionKey: string,
+  performer: string | null,
+  rng: SeededRandom,
+  workloads: Map<string, PerformerWorkload>
+): number {
+  const timeRange = TRANSITION_TIME_RANGES[transitionKey as keyof typeof TRANSITION_TIME_RANGES];
+  let baseDuration: number;
+
+  if (timeRange) {
+    baseDuration = rng.nextFloat(timeRange.min, timeRange.max);
+  } else {
+    baseDuration = rng.nextFloat(1, 24); // Default fallback
+  }
+
+  if (!performer) {
+    return baseDuration; // Automatic transitions remain unchanged
+  }
+
+  const profile = PERFORMER_PROFILES[performer as keyof typeof PERFORMER_PROFILES];
+  const workload = workloads.get(performer)!;
+
+  // Apply performer speed multiplier
+  let adjustedDuration = baseDuration * profile.speed;
+
+  // Apply consistency variance (lower consistency = more variable performance)
+  const varianceMultiplier = 1 + ((1 - profile.consistency) * (rng.nextFloat(-0.5, 0.5)));
+  adjustedDuration *= Math.max(0.5, varianceMultiplier);
+
+  // Apply fatigue effect (higher workload = slower performance)
+  const fatigueMultiplier = 1 + (workload.fatigueLevel * 0.3);
+  adjustedDuration *= fatigueMultiplier;
+
+  // Random bottleneck events (5% chance for 2-4x longer processing)
+  if (rng.next() < 0.05) {
+    const bottleneckMultiplier = rng.nextFloat(2, 4);
+    adjustedDuration *= bottleneckMultiplier;
+  }
+
+  // Peak time effects (10% slower during busy periods)
+  if (rng.next() < 0.3) { // 30% of cases occur during peak times
+    adjustedDuration *= 1.1;
+  }
+
+  return Math.max(0.1, adjustedDuration); // Minimum 6 minutes
+}
+
+function generateCaseEvents(
+  caseId: string,
+  sequence: PermitState[],
+  rng: SeededRandom,
+  performerWorkloads: Map<string, PerformerWorkload>
+): Event[] {
   const events: Event[] = [];
 
   // Start with a random timestamp within the last 6 months
@@ -94,15 +202,15 @@ function generateCaseEvents(caseId: string, sequence: PermitState[], rng: Seeded
   for (let i = 0; i < sequence.length; i++) {
     const state = sequence[i];
 
-    // Determine performer
+    // Enhanced performer selection with workload consideration
     let performer: string | null = null;
     if (HUMAN_STATES.includes(state)) {
       if (state === 'intake_validation') {
-        performer = rng.choice([...PERFORMERS.clerks]);
+        performer = selectPerformerWithWorkload(PERFORMERS.clerks, rng, performerWorkloads);
       } else if (state === 'health_inspection') {
-        performer = rng.choice([...PERFORMERS.health_inspectors]);
+        performer = selectPerformerWithWorkload(PERFORMERS.health_inspectors, rng, performerWorkloads);
       } else {
-        performer = rng.choice([...PERFORMERS.reviewers]);
+        performer = selectPerformerWithWorkload(PERFORMERS.reviewers, rng, performerWorkloads);
       }
     }
 
@@ -113,18 +221,19 @@ function generateCaseEvents(caseId: string, sequence: PermitState[], rng: Seeded
       performer
     });
 
-    // Calculate time to next state
+    // Calculate time to next state with enhanced variance
     if (i < sequence.length - 1) {
-      const transitionKey = `${state}->${sequence[i + 1]}` as keyof typeof TRANSITION_TIME_RANGES;
-      const timeRange = TRANSITION_TIME_RANGES[transitionKey];
+      const transitionKey = `${state}->${sequence[i + 1]}`;
+      const durationHours = calculateProcessingTime(transitionKey, performer, rng, performerWorkloads);
 
-      if (timeRange) {
-        const durationHours = rng.nextFloat(timeRange.min, timeRange.max);
-        currentTime = new Date(currentTime.getTime() + durationHours * 60 * 60 * 1000);
-      } else {
-        // Default fallback for unknown transitions
-        const durationHours = rng.nextFloat(1, 24);
-        currentTime = new Date(currentTime.getTime() + durationHours * 60 * 60 * 1000);
+      currentTime = new Date(currentTime.getTime() + durationHours * 60 * 60 * 1000);
+
+      // Update performer workload tracking
+      if (performer) {
+        const workload = performerWorkloads.get(performer)!;
+        workload.caseCount++;
+        workload.totalTime += durationHours;
+        workload.fatigueLevel = Math.min(1.0, workload.caseCount / 50); // Fatigue increases with caseload
       }
     }
   }
