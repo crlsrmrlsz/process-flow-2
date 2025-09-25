@@ -23,27 +23,55 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
   // Check if this is a final node that should show total time
   const isFinalNode = label === 'approved' || label === 'rejected' || label === 'withdrawn';
 
-  // Get node styling based on design guide patterns - FORCE modern rounded style
+  // Get node styling - use consistent approach with inline styles to avoid conflicts
   const getNodeStyle = () => {
-    // Use !important-style approach with explicit rounded-xl and modern styling
-    let baseClasses = "!rounded-xl px-4 py-3 text-sm !shadow-lg !border-2 transition-all duration-300 font-medium text-center";
+    let baseClasses = "rounded-xl px-4 py-3 text-sm shadow-lg border-2 transition-all duration-300 font-medium text-center";
 
     if (selected) {
-      baseClasses += " !ring-4 !ring-blue-400 !ring-opacity-50";
+      baseClasses += " ring-4 ring-blue-400 ring-opacity-50";
     }
 
-    // Happy Path highlighting - more prominent
+    return baseClasses;
+  };
+
+  // Get inline styles for consistent happy path highlighting
+  const getInlineStyles = () => {
+    const baseStyle = {
+      borderRadius: '12px',
+      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+      width: calculatedWidth ? `${calculatedWidth}px` : '120px',
+      minWidth: '120px',
+      padding: '12px 16px'
+    };
+
+    // Happy Path highlighting - takes priority
     if (showHappyPath && isHappyPath) {
-      return `${baseClasses} !bg-green-100 !border-green-400 !text-green-800 !shadow-green-200`;
+      return {
+        ...baseStyle,
+        backgroundColor: '#dcfce7', // green-100
+        borderColor: '#4ade80',     // green-400
+        color: '#166534'           // green-800
+      };
     }
 
     // Terminal/disabled state
     if (isEnd) {
-      return `${baseClasses} !bg-gray-100 !border-gray-300 !text-gray-600`;
+      return {
+        ...baseStyle,
+        backgroundColor: '#f3f4f6', // gray-100
+        borderColor: '#d1d5db',     // gray-300
+        color: '#4b5563'           // gray-600
+      };
     }
 
     // Normal state - modern blue theme
-    return `${baseClasses} !bg-blue-50 !border-blue-300 !text-blue-900 !shadow-blue-100`;
+    return {
+      ...baseStyle,
+      backgroundColor: '#eff6ff', // blue-50
+      borderColor: '#93c5fd',     // blue-300
+      color: '#1e3a8a',          // blue-900
+      border: '2px solid #9ca3af'
+    };
   };
 
   // Format label for display
@@ -64,15 +92,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
   return (
     <div
       className={getNodeStyle()}
-      style={{
-        borderRadius: '12px',
-        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-        border: '2px solid #9ca3af',
-        backgroundColor: showHappyPath && isHappyPath ? '#dcfce7' : isEnd ? '#dbeafe' : 'white',
-        width: calculatedWidth ? `${calculatedWidth}px` : '120px',
-        minWidth: '120px',
-        padding: '12px 16px'
-      }}
+      style={getInlineStyles()}
     >
       {/* Input handles (except for start nodes) */}
       {!isStart && (

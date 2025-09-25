@@ -85,21 +85,25 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
 
   // Clean edge styling following design guide
   const getStrokeWidth = () => {
-    if (showBottlenecks && isBottleneck) return 4; // Thicker for bottlenecks
+    // Happy path takes priority over bottlenecks when both are enabled
     if (showHappyPath && isHappyPath) return 3; // Slightly thicker for happy path
+    if (showBottlenecks && isBottleneck) return 4; // Thicker for bottlenecks
     return selected ? 3 : 2; // Increased base thickness for better visibility
   };
 
   // Design guide color scheme with more prominent colors
   const getStrokeColor = () => {
-    if (showBottlenecks && isBottleneck) return '#ef4444'; // Bright red for bottlenecks
+    // Happy path takes priority over bottlenecks when both are enabled
     if (showHappyPath && isHappyPath) return '#22c55e'; // Bright green for happy path
+    if (showBottlenecks && isBottleneck) return '#ef4444'; // Bright red for bottlenecks
     if (selected) return '#4f46e5'; // Indigo-600 when selected
     return '#9ca3af'; // Gray-400 default
   };
 
-  // Add dashed style for bottlenecks
+  // Add dashed style for bottlenecks (but not for happy path)
   const getStrokeDasharray = () => {
+    // Happy path should always be solid lines
+    if (showHappyPath && isHappyPath) return undefined; // Solid line for happy path
     if (showBottlenecks && isBottleneck) return '8 4'; // Dashed pattern for bottlenecks
     return undefined; // Solid line for others
   };
