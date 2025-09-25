@@ -54,23 +54,24 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       };
     }
 
-    // Terminal/disabled state
+    // Final/terminal state - blue theme (only final nodes should be blue)
     if (isEnd) {
       return {
         ...baseStyle,
-        backgroundColor: '#f3f4f6', // gray-100
-        borderColor: '#d1d5db',     // gray-300
-        color: '#4b5563'           // gray-600
+        backgroundColor: '#eff6ff', // blue-50
+        borderColor: '#93c5fd',     // blue-300
+        color: '#1e3a8a',          // blue-900
+        border: '2px solid #93c5fd'
       };
     }
 
-    // Normal state - modern blue theme
+    // Normal state - light gray theme
     return {
       ...baseStyle,
-      backgroundColor: '#eff6ff', // blue-50
-      borderColor: '#93c5fd',     // blue-300
-      color: '#1e3a8a',          // blue-900
-      border: '2px solid #9ca3af'
+      backgroundColor: '#f9fafb', // gray-50
+      borderColor: '#d1d5db',     // gray-300
+      color: '#374151',          // gray-700
+      border: '2px solid #d1d5db'
     };
   };
 

@@ -164,7 +164,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           isStart,
           isEnd,
           isHappyPath,
-          showHappyPath: false // Will be set by useEffect to avoid layout reset
+          showHappyPath // Use actual current state instead of hardcoded false
         }
       };
     });
