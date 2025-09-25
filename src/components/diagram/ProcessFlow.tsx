@@ -121,12 +121,16 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   const { initialNodes, initialEdges } = useMemo(() => {
     if (!aggregatedVariant) return { initialNodes: [], initialEdges: [] };
 
-    // Helper function to detect backward edges based on happy path sequence
+    // Helper function to detect backward edges based on process flow logic
     const isBackwardEdge = (from: string, to: string): boolean => {
-      const sequence = HAPPY_PATH_CONFIG.sequence;
-      const fromIndex = sequence.indexOf(from as any);
-      const toIndex = sequence.indexOf(to as any);
-      return fromIndex > toIndex && fromIndex !== -1 && toIndex !== -1;
+      // Define known backward transitions that should use left-side routing
+      const backwardTransitions = [
+        'applicant_provided_info->review_in_progress', // Loop back after additional info provided
+        // Add other backward transitions here if needed in the future
+      ];
+
+      const transitionKey = `${from}->${to}`;
+      return backwardTransitions.includes(transitionKey);
     };
 
     // Get happy path sequence for comparison (now decoupled from specific variant)
