@@ -122,38 +122,23 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Main Container - Central panel with lateral spaces */}
-      <div className="w-[60%] mx-auto">
-        {/* Header Section */}
-        <div className="w-full bg-white border-b border-gray-200 py-8">
-          <div className="px-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">
-              Process Mining Demo
-            </h1>
-            <div className="max-w-4xl mx-auto leading-normal space-y-3" style={{
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#374151',
-              textAlign: 'justify'
-            }}>
-              <p>
-                <strong>Process description:</strong> This interactive diagram visualizes real restaurant permit application workflows using process mining techniques. Each path represents how applications move from initial submission through city review, documentation requests, health inspections, and final approval decisions. The variants and flow patterns are automatically discovered from event log data.
-              </p>
-              <p>
-                <strong>How to use:</strong> Select process variants from the right panel to compare different approval paths. Toggle 'Show Happy Path' to highlight the most efficient route in green, or enable 'Show Bottlenecks' to identify delays and inefficiencies in red. Drag nodes to customize the layout for better analysis. Each edge displays average processing time between steps.
-              </p>
-            </div>
-          </div>
+      {/* Simplified Header - Just Title */}
+      <div className="w-full py-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            Process Mining Demo
+          </h1>
         </div>
+      </div>
 
-        {/* Main Content Section - Full Width Diagram with Floating Controls */}
-        <div className="w-full bg-gray-50 pt-0 pb-8">
-          <div className="px-8">
-            {/* Main Container with Relative Positioning for Overlays */}
-            <div className="relative">
-              {/* Full Width Diagram - Background Layer */}
-              <div className="relative h-[92vh] bg-white rounded-lg shadow-sm overflow-hidden" style={{ zIndex: 1, paddingTop: '150px' }}>
+      {/* Full Width Main Content - Centered Diagram with Overlapping Panels */}
+      <div className="w-full bg-gray-50 pb-8">
+        {/* Centered Container for Diagram */}
+        <div className="flex justify-center">
+          {/* Main Container with Relative Positioning for Overlays */}
+          <div className="relative w-full max-w-7xl">
+            {/* Full Width Centered Diagram - Background Layer */}
+            <div className="relative h-[85vh] bg-white rounded-lg shadow-sm overflow-hidden mx-8" style={{ zIndex: 1 }}>
                 <ErrorBoundary>
                   <ProcessFlow
                     variant={selectedVariantData}
@@ -169,7 +154,7 @@ function App() {
                 </ErrorBoundary>
               </div>
 
-              {/* Variants Panel - Top Left Overlay */}
+              {/* Process Description + Variants Panel - Top Left Overlay */}
               <div style={{
                 position: 'absolute',
                 top: '20px',
@@ -185,6 +170,18 @@ function App() {
                     maxWidth: '280px'
                   }}
                 >
+                  {/* Process Description */}
+                  <div style={{
+                    fontSize: '11px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '16px',
+                    lineHeight: '1.4',
+                    textAlign: 'left'
+                  }}>
+                    <strong style={{ fontSize: '12px' }}>Process description:</strong> This interactive diagram visualizes real restaurant permit application workflows using process mining techniques. Each path represents how applications move from initial submission through city review, documentation requests, health inspections, and final approval decisions. The variants and flow patterns are automatically discovered from event log data.
+                  </div>
+
                   {/* Header */}
                   <div style={{
                     fontSize: '14px',
@@ -235,10 +232,10 @@ function App() {
                 </div>
               </div>
 
-              {/* Controls Panel - Top Right, above Reset Button */}
+              {/* Controls + How-to-Use Panel - Top Right */}
               <div style={{
                 position: 'absolute',
-                top: '20px',
+                top: '96px', // Aligned with first variant checkbox
                 right: '20px',
                 zIndex: 10
               }}>
@@ -247,7 +244,8 @@ function App() {
                     backgroundColor: 'white',
                     borderRadius: '12px',
                     padding: '12px',
-                    minWidth: '180px',
+                    minWidth: '240px',
+                    maxWidth: '280px',
                     marginBottom: '10px'
                   }}
                 >
@@ -280,15 +278,29 @@ function App() {
                         </div>
                       </label>
                     </div>
+                  </div>
 
+                  {/* How to Use Description */}
+                  <div style={{
+                    fontSize: '11px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginTop: '16px',
+                    lineHeight: '1.4',
+                    textAlign: 'left'
+                  }}>
+                    <strong style={{ fontSize: '12px' }}>How to use:</strong> Select process variants from the left panel to compare different approval paths. Toggle 'Happy Path' to highlight the most efficient route in green, or enable 'Bottlenecks' to identify delays and inefficiencies in red. Drag nodes to customize the layout for better analysis. Each edge displays average processing time between steps.
                   </div>
                 </div>
 
-                {/* Reset Layout Button - Below Controls */}
+                {/* Reset Layout Button - Below Controls, same width as panel */}
                 <button
                   onClick={handleResetLayout}
                   className="github-btn"
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '240px', // Match panel width
+                    maxWidth: '280px'
+                  }}
                 >
                   Reset Layout
                 </button>
@@ -296,7 +308,6 @@ function App() {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
