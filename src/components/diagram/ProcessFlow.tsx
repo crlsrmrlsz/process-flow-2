@@ -121,6 +121,14 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   const { initialNodes, initialEdges } = useMemo(() => {
     if (!aggregatedVariant) return { initialNodes: [], initialEdges: [] };
 
+    // Helper function to detect backward edges based on happy path sequence
+    const isBackwardEdge = (from: string, to: string): boolean => {
+      const sequence = HAPPY_PATH_CONFIG.sequence;
+      const fromIndex = sequence.indexOf(from as any);
+      const toIndex = sequence.indexOf(to as any);
+      return fromIndex > toIndex && fromIndex !== -1 && toIndex !== -1;
+    };
+
     // Get happy path sequence for comparison (now decoupled from specific variant)
     const happyPathSequence = HAPPY_PATH_CONFIG.sequence;
 
@@ -170,6 +178,11 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       happyPathTransitions.push(`${happyPathSequence[i]}-${happyPathSequence[i + 1]}`);
     }
 
+    // Debug logging for bottleneck detection
+    console.log('ProcessFlow: Detected bottlenecks:', bottlenecks.length, bottlenecks.map(b => b.identifier));
+    console.log('ProcessFlow: Happy path transitions:', happyPathTransitions);
+    console.log('ProcessFlow: Current toggle states - showHappyPath:', showHappyPath, 'showBottlenecks:', showBottlenecks);
+
     aggregatedVariant.transitions.forEach((transition) => {
       const transitionKey = `${transition.from}-${transition.to}`;
       const isBottleneck = bottlenecks.some(b =>
@@ -182,33 +195,48 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       // Calculate expected time for this transition
       const expectedTime = getExpectedTime(transition.from, transition.to);
 
-      // Create edge with default React Flow handles (simplified for vertical layout)
-      variantEdges.push({
-          id: transitionKey,
-          source: transition.from,
-          target: transition.to,
-          type: 'custom',
-          animated: false, // Will be set by useEffect to avoid layout reset
-          data: {
-            count: transition.count,
-            medianTime: transition.median_time_hours,
-            meanTime: transition.mean_time_hours,
-            isBottleneck,
-            expectedTime: expectedTime || undefined,
-            contributingVariants: transition.contributing_variants,
-            performer_breakdown: transition.performer_breakdown, // Include for splitting
-            isHappyPath,
-            showHappyPath: false, // Will be set by useEffect to avoid layout reset
-            showBottlenecks: false // Will be set by useEffect to avoid layout reset
-          }
-    });
+      // Detect if this is a backward edge for handle routing
+      const isBackward = isBackwardEdge(transition.from, transition.to);
+
+      // Debug log for each edge
+      if (isBottleneck || isHappyPath || isBackward) {
+        console.log(`ProcessFlow: Edge ${transitionKey} - isBottleneck:${isBottleneck}, isHappyPath:${isHappyPath}, isBackward:${isBackward}, expectedTime:${expectedTime}, meanTime:${transition.mean_time_hours}`);
+      }
+
+      // Create edge with proper handle routing
+      const edgeData: Edge<CustomEdgeData> = {
+        id: transitionKey,
+        source: transition.from,
+        target: transition.to,
+        type: 'custom',
+        animated: showBottlenecks && isBottleneck, // Set animation based on current state
+        data: {
+          count: transition.count,
+          medianTime: transition.median_time_hours,
+          meanTime: transition.mean_time_hours,
+          isBottleneck,
+          expectedTime: expectedTime || undefined,
+          contributingVariants: transition.contributing_variants,
+          performer_breakdown: transition.performer_breakdown, // Include for splitting
+          isHappyPath,
+          showHappyPath, // Use actual current state
+          showBottlenecks // Use actual current state
+        },
+        // Add handle specification for backward edges
+        ...(isBackward && {
+          sourceHandle: 'left',
+          targetHandle: 'left'
+        })
+      };
+
+      variantEdges.push(edgeData);
   });
 
     return {
       initialNodes: variantNodes,
       initialEdges: variantEdges
     };
-  }, [aggregatedVariant, bottlenecks, performerColors]);
+  }, [aggregatedVariant, bottlenecks, performerColors, showHappyPath, showBottlenecks]);
 
   // Apply layout when variant changes
   useEffect(() => {
@@ -241,42 +269,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     }, 100);
   }, [variants]); // Only reset layout when variants actually change, not on styling updates
 
-  // Update node and edge styles when showHappyPath or showBottlenecks changes (without changing positions)
-  useEffect(() => {
-    if (nodes.length === 0) return;
-
-    // Mark that we're doing a style update to prevent position resets
-    isStyleUpdate.current = true;
-
-    // Update nodes with new showHappyPath state (onNodesChange will filter position changes)
-    setNodes(currentNodes =>
-      currentNodes.map(node => ({
-        ...node,
-        data: {
-          ...node.data,
-          showHappyPath
-        }
-      }))
-    );
-
-    // Update edges with new showHappyPath and showBottlenecks state
-    setEdges(currentEdges =>
-      currentEdges.map(edge => ({
-        ...edge,
-        animated: showBottlenecks && edge.data?.isBottleneck, // Set animation here to avoid layout reset
-        data: {
-          ...edge.data,
-          showHappyPath,
-          showBottlenecks
-        }
-      }))
-    );
-
-    // Clear the style update flag after React has processed the changes
-    setTimeout(() => {
-      isStyleUpdate.current = false;
-    }, 0);
-  }, [showHappyPath, showBottlenecks, setNodes, setEdges]);
+  // Removed separate style update useEffect - now handled in main useMemo for better performance
 
   // Custom drag handler with reduced sensitivity for "heavier" feel
   const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null);
