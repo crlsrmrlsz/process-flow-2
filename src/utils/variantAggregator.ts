@@ -1,4 +1,4 @@
-import type { Variant, StateOccupancy } from '../types/Variant';
+import type { Variant } from '../types/Variant';
 import type { ProcessCase } from '../types/EventLog';
 
 export interface AggregatedStateOccupancy {

@@ -18,7 +18,7 @@ interface CustomNodeProps {
 }
 
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
-  const { label, count, isBottleneck, isStart, isEnd, isHappyPath, showHappyPath, calculatedWidth } = data;
+  const { label, count, isStart, isEnd, isHappyPath, showHappyPath, calculatedWidth } = data;
 
   // Check if this is a final node that should show total time
   const isFinalNode = label === 'approved' || label === 'rejected' || label === 'withdrawn';

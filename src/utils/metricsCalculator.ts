@@ -3,7 +3,33 @@ import type { Variant } from '../types/Variant';
 import type { DirectlyFollowsGraph } from '../types/DFG';
 import { TRANSITION_TIME_RANGES } from '../constants/permitStates';
 
-// Helper function to get expected time for a transition
+/**
+ * Get Expected Time for Process Transition
+ *
+ * PURPOSE:
+ * Retrieves the expected maximum processing time for a specific state transition.
+ * This is used for bottleneck detection and displaying expected times to users.
+ *
+ * PARAMETERS:
+ * @param from - Source state name (e.g., 'submitted', 'review_in_progress')
+ * @param to - Target state name (e.g., 'intake_validation', 'approved')
+ *
+ * RETURNS:
+ * - number: Expected maximum time in hours (from TRANSITION_TIME_RANGES.max)
+ * - null: If no expected time is configured for this transition
+ *
+ * USAGE:
+ * - Bottleneck Detection: Compare actual times against expected times
+ * - UI Display: Show "expected: 48h" in edge labels
+ * - Business Logic: Use expected times for process optimization
+ *
+ * EXAMPLES:
+ * - getExpectedTime('submitted', 'intake_validation') → 48 (hours)
+ * - getExpectedTime('unknown', 'state') → null
+ *
+ * NOTE: Uses the 'max' value from time ranges as the bottleneck threshold.
+ * This represents the business expectation for maximum acceptable processing time.
+ */
 export function getExpectedTime(from: string, to: string): number | null {
   const transitionKey = `${from}->${to}` as keyof typeof TRANSITION_TIME_RANGES;
   const timeRange = TRANSITION_TIME_RANGES[transitionKey];

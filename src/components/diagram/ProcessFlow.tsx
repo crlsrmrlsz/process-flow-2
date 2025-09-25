@@ -3,12 +3,9 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
-  Controls,
   Background,
-  Panel,
   useReactFlow,
   ReactFlowProvider,
-  MarkerType
 } from 'reactflow';
 import type {
   Node,
@@ -24,12 +21,10 @@ import { CustomEdge } from './CustomEdge';
 import type { CustomNodeData } from './CustomNode';
 import type { CustomEdgeData } from './CustomEdge';
 import type { Variant } from '../../types/Variant';
-import { applyDagreLayout, refineLayoutWithOverlapResolution, saveLayoutToSession, loadLayoutFromSession, detectOverlaps } from '../../utils/layoutUtils';
-import { aggregateVariants, type AggregatedVariant, type TotalFlowData } from '../../utils/variantAggregator';
-import { getExpectedTime, analyzeWorkerPerformance, type WorkerPerformanceAnalysis } from '../../utils/metricsCalculator';
-import { VariantSelectionPanel } from '../variant-panel/VariantSelectionPanel';
-import { WorkerInfoPanel } from './WorkerInfoPanel';
-import { HAPPY_PATH_CONFIG, HUMAN_STATES } from '../../constants/permitStates';
+import { refineLayoutWithOverlapResolution, saveLayoutToSession } from '../../utils/layoutUtils';
+import { aggregateVariants, type TotalFlowData } from '../../utils/variantAggregator';
+import { getExpectedTime } from '../../utils/metricsCalculator';
+import { HAPPY_PATH_CONFIG } from '../../constants/permitStates';
 
 interface ProcessFlowProps {
   variant: Variant[] | null;
@@ -43,8 +38,6 @@ interface ProcessFlowProps {
   onVariantSelect: (variantId: string) => void;
   showHappyPath: boolean;
   showBottlenecks: boolean;
-  showWorkerInfo: boolean;
-  onResetLayout?: () => void;
   resetLayoutTrigger?: number;
   totalFlowData?: TotalFlowData | null;
 }
@@ -60,19 +53,14 @@ const edgeTypes: EdgeTypes = {
 export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   variant: variants,
   bottlenecks,
-  variants: allVariants,
-  selectedVariants,
-  onVariantSelect,
   showHappyPath,
   showBottlenecks,
-  showWorkerInfo,
-  onResetLayout,
   resetLayoutTrigger,
   totalFlowData
 }) => {
   const [nodes, setNodes, onNodesChangeOriginal] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [hasManualLayout, setHasManualLayout] = useState(false);
+  const [, setHasManualLayout] = useState(false);
 
   // Add missing refs for drag tracking
   const isDragging = useRef(false);
@@ -191,29 +179,14 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
       // Check if this transition is part of the happy path
       const isHappyPath = happyPathTransitions.includes(transitionKey);
 
-      // Detect backward edges based on actual process flow sequence
-      const processSequence = ['submitted', 'intake_validation', 'assigned_to_reviewer', 'review_in_progress', 'request_additional_info', 'applicant_provided_info', 'health_inspection', 'approved', 'rejected', 'withdrawn'];
-      const sourceIndex = processSequence.indexOf(transition.from);
-      const targetIndex = processSequence.indexOf(transition.to);
-      const isBackwardEdge = sourceIndex > targetIndex && sourceIndex !== -1 && targetIndex !== -1;
-
-      // Handle selection for horizontal flow
-      let sourceHandle = isBackwardEdge ? 'bottom' : 'right'; // Backward edges exit from bottom
-      let targetHandle = isBackwardEdge ? 'bottom' : 'left';   // Backward edges enter from bottom
-
-      // Calculate expected time and worker performance for this transition
+      // Calculate expected time for this transition
       const expectedTime = getExpectedTime(transition.from, transition.to);
-      const workerPerformance = expectedTime && transition.performer_breakdown && HUMAN_STATES.includes(transition.to as any)
-        ? analyzeWorkerPerformance(transition.performer_breakdown, expectedTime)
-        : undefined;
 
-      // Create single aggregated edge with smart handle selection
+      // Create edge with default React Flow handles (simplified for vertical layout)
       variantEdges.push({
           id: transitionKey,
           source: transition.from,
           target: transition.to,
-          sourceHandle,
-          targetHandle,
           type: 'custom',
           animated: false, // Will be set by useEffect to avoid layout reset
           data: {
@@ -221,10 +194,9 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
             medianTime: transition.median_time_hours,
             meanTime: transition.mean_time_hours,
             isBottleneck,
-            expectedTime,
+            expectedTime: expectedTime || undefined,
             contributingVariants: transition.contributing_variants,
             performer_breakdown: transition.performer_breakdown, // Include for splitting
-            workerPerformance,
             isHappyPath,
             showHappyPath: false, // Will be set by useEffect to avoid layout reset
             showBottlenecks: false // Will be set by useEffect to avoid layout reset
@@ -398,14 +370,13 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
   }, [initialNodes, initialEdges, variants, setNodes, setEdges]);
 
   // Reset to automatic layout (with callback for external use)
-  const resetLayout = useCallback(() => {
-    doResetLayout();
-
-    // Call external callback if provided
-    if (onResetLayout) {
-      onResetLayout();
-    }
-  }, [doResetLayout, onResetLayout]);
+  // Reset layout callback
+  // const resetLayout = useCallback(() => {
+  //   doResetLayout();
+  //   if (onResetLayout) {
+  //     onResetLayout();
+  //   }
+  // }, [doResetLayout, onResetLayout]); // Unused after UI reorganization
 
   // Watch for reset layout trigger from parent
   useEffect(() => {
@@ -419,7 +390,7 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
 
 
   // Check for overlapping nodes
-  const hasOverlaps = useMemo(() => detectOverlaps(nodes), [nodes]);
+  // const hasOverlaps = useMemo(() => detectOverlaps(nodes), [nodes]); // Unused after refactoring
 
   if (!variants || variants.length === 0) {
     return (
@@ -433,40 +404,6 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
     );
   }
 
-  // Calculate worker info panels when showWorkerInfo is enabled
-  const workerPanels = React.useMemo(() => {
-    if (!showWorkerInfo) return [];
-
-    const panels: Array<{
-      id: string;
-      workerId: string;
-      processCount: number;
-      meanTime: number;
-      isOverExpected: boolean;
-      position: { x: number; y: number };
-    }> = [];
-
-    edges.forEach((edge, edgeIndex) => {
-      if (edge.data?.workerPerformance) {
-        edge.data.workerPerformance.forEach((worker: any, workerIndex: number) => {
-          // Calculate position near the edge - simplified for now
-          const baseX = 100 + (edgeIndex * 120); // Spread horizontally
-          const baseY = 150 + (workerIndex * 60); // Stack vertically per edge
-
-          panels.push({
-            id: `${edge.id}-${worker.workerId}`,
-            workerId: worker.workerId,
-            processCount: worker.processCount,
-            meanTime: worker.meanTime,
-            isOverExpected: worker.isOverExpected,
-            position: { x: baseX, y: baseY }
-          });
-        });
-      }
-    });
-
-    return panels;
-  }, [showWorkerInfo, edges]);
 
   return (
     <div className="h-full relative">
@@ -484,18 +421,6 @@ export const ProcessFlow: React.FC<ProcessFlowProps> = ({
           edgeTypes={edgeTypes}
           fitViewRef={fitViewRef}
         />
-
-        {/* Render worker info panels */}
-        {workerPanels.map((panel) => (
-          <WorkerInfoPanel
-            key={panel.id}
-            workerId={panel.workerId}
-            processCount={panel.processCount}
-            meanTime={panel.meanTime}
-            isOverExpected={panel.isOverExpected}
-            position={panel.position}
-          />
-        ))}
       </ReactFlowProvider>
     </div>
   );
@@ -548,7 +473,7 @@ const ProcessFlowInner: React.FC<{
         maxY: Math.max(...nodes.map(n => n.position.y + (n.height || 80) + 60)) // +60 for final node labels
       };
 
-      const viewport = reactFlowInstance.getViewport();
+      // const viewport = reactFlowInstance.getViewport(); // Unused after refactoring
       const reactFlowBounds = document.querySelector('.react-flow')?.getBoundingClientRect();
 
       if (!reactFlowBounds) return;

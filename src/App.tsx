@@ -1,11 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import type { EventLog } from './types/EventLog';
 import type { Variant } from './types/Variant';
 import { generateEventLog } from './utils/dataGenerator';
 import { ProcessFlow } from './components/diagram/ProcessFlow';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import { extractCases, extractVariants } from './utils/variantExtractor';
-import { calculateTotalFlow, type TotalFlowData } from './utils/variantAggregator';
+import { calculateTotalFlow } from './utils/variantAggregator';
 import { identifyBottlenecks } from './utils/metricsCalculator';
 import { VARIANT_DEFINITIONS } from './constants/permitStates';
 
@@ -14,7 +13,6 @@ function App() {
   const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
   const [showHappyPath, setShowHappyPath] = useState(false);
   const [showBottlenecks, setShowBottlenecks] = useState(false);
-  const [showWorkerInfo, setShowWorkerInfo] = useState(false);
   const [resetLayoutTrigger, setResetLayoutTrigger] = useState(0);
 
   // Helper function to get proper variant display name
@@ -165,8 +163,6 @@ function App() {
                     onVariantSelect={handleVariantSelect}
                     showHappyPath={showHappyPath}
                     showBottlenecks={showBottlenecks}
-                    showWorkerInfo={showWorkerInfo}
-                    onResetLayout={handleResetLayout}
                     resetLayoutTrigger={resetLayoutTrigger}
                     totalFlowData={totalFlowData}
                   />
@@ -206,7 +202,7 @@ function App() {
                         Loading variants...
                       </div>
                     ) : (
-                      variants.sort((a, b) => b.case_count - a.case_count).map((variant, index) => {
+                      variants.sort((a, b) => b.case_count - a.case_count).map((variant) => {
                         const isSelected = selectedVariants.includes(variant.variant_id);
                         const totalCases = variants.reduce((sum, v) => sum + v.case_count, 0);
                         const percentage = ((variant.case_count / totalCases) * 100).toFixed(1);
@@ -239,11 +235,11 @@ function App() {
                 </div>
               </div>
 
-              {/* Controls Panel - Next to Variants (Center-Left) */}
+              {/* Controls Panel - Top Right, above Reset Button */}
               <div style={{
                 position: 'absolute',
                 top: '20px',
-                left: '340px', // Right next to variants panel
+                right: '20px',
                 zIndex: 10
               }}>
                 <div
@@ -251,7 +247,8 @@ function App() {
                     backgroundColor: 'white',
                     borderRadius: '12px',
                     padding: '12px',
-                    minWidth: '180px'
+                    minWidth: '180px',
+                    marginBottom: '10px'
                   }}
                 >
                   {/* Controls List with Checkboxes */}
@@ -284,33 +281,14 @@ function App() {
                       </label>
                     </div>
 
-                    {/* Per Worker Info Checkbox */}
-                    <div>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={showWorkerInfo}
-                          onChange={() => setShowWorkerInfo(!showWorkerInfo)}
-                        />
-                        <div className="variant-name">
-                          Per Worker Info
-                        </div>
-                      </label>
-                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Reset Layout Button - Top Right */}
-              <div style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                zIndex: 10
-              }}>
+                {/* Reset Layout Button - Below Controls */}
                 <button
                   onClick={handleResetLayout}
                   className="github-btn"
+                  style={{ width: '100%' }}
                 >
                   Reset Layout
                 </button>

@@ -10,7 +10,7 @@ export interface LayoutOptions {
 }
 
 export const defaultLayoutOptions: LayoutOptions = {
-  direction: 'LR', // Left to Right (horizontal flow)
+  direction: 'TB', // Top to Bottom (vertical flow)
   nodeWidth: 150,
   nodeHeight: 80,
   nodeSpacing: 40,  // Reduced from 50

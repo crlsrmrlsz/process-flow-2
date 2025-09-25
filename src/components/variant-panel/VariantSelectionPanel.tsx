@@ -13,9 +13,7 @@ interface VariantSelectionPanelProps {
 export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
   variants,
   selectedVariants,
-  onVariantSelect,
-  showHappyPath,
-  onHappyPathToggle
+  onVariantSelect
 }) => {
 
   console.log('VariantSelectionPanel: variants.length =', variants.length);

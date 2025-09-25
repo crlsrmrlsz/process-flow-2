@@ -14,13 +14,6 @@ export interface CustomEdgeData {
     median_time_hours: number;
   }>;
   performer_breakdown?: Record<string, { count: number; median_time_hours: number; mean_time_hours: number }>;
-  workerPerformance?: Array<{
-    workerId: string;
-    processCount: number;
-    meanTime: number;
-    isOverExpected: boolean;
-    percentageOver: number;
-  }>;
   performer?: string; // For split edges
   originalTransition?: string; // For split edges
   performerIndex?: number; // Index of performer for positioning
@@ -87,7 +80,7 @@ export const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
 
   if (!data) return null;
 
-  const { count, medianTime, meanTime, isBottleneck, expectedTime, workerPerformance, contributingVariants, performer, isHappyPath, showHappyPath, showBottlenecks } = data;
+  const { count, medianTime, meanTime, isBottleneck, expectedTime, performer, isHappyPath, showHappyPath, showBottlenecks } = data;
 
 
   // Clean edge styling following design guide
