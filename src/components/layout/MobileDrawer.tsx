@@ -85,43 +85,26 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className={`drawer lg:hidden ${isOpen ? 'drawer-open' : ''}`}>
-      <input
-        id="mobile-drawer-toggle"
-        type="checkbox"
-        className="drawer-toggle"
-        checked={isOpen}
-        onChange={() => {}} // Controlled by parent
+    <>
+      {/* Backdrop overlay */}
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        onClick={onClose}
+        aria-hidden="true"
       />
 
-      <div className="drawer-content">
-        {/* Empty - content is in main app */}
-      </div>
-
-      <div className="drawer-side">
-        <label
-          className="drawer-overlay"
-          onClick={onClose}
-          aria-hidden="true"
-        ></label>
-
-        <div
-          id="mobile-controls"
-          ref={drawerRef}
-          className="bg-base-100 rounded-t-lg shadow-lg max-h-[85vh] overflow-auto w-full transform transition-transform duration-300"
-          style={{
-            transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 50
-          }}
-          aria-hidden={!isOpen}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="drawer-title"
-        >
+      {/* Drawer */}
+      <div
+        id="mobile-controls"
+        ref={drawerRef}
+        className={`fixed inset-x-0 bottom-0 lg:hidden transform transition-transform duration-300 bg-base-100 rounded-t-lg shadow-lg z-50 max-h-[85vh] overflow-auto ${
+          isOpen ? 'translate-y-0' : 'translate-y-full'
+        }`}
+        aria-hidden={!isOpen}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="drawer-title"
+      >
         {/* Drawer Header */}
         <div className="flex items-center justify-between p-4 border-b bg-base-200 rounded-t-lg">
           <h2 id="drawer-title" className="text-lg font-semibold text-base-content">
@@ -153,12 +136,11 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           />
         </div>
 
-          {/* Pull indicator */}
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-            <div className="w-8 h-1 bg-base-300 rounded-full"></div>
-          </div>
+        {/* Pull indicator */}
+        <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+          <div className="w-8 h-1 bg-base-300 rounded-full"></div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

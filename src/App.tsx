@@ -139,32 +139,8 @@ function App() {
         onMobileToggle={handleMobileToggle}
       />
 
-      {/* DaisyUI Drawer Layout */}
-      <div className="drawer lg:drawer-open flex-1">
-        {/* Hidden checkbox for drawer state */}
-        <input
-          id="drawer-toggle"
-          type="checkbox"
-          className="drawer-toggle"
-          checked={!sidebarCollapsed}
-          onChange={handleSidebarToggle}
-        />
-
-        {/* Main Content */}
-        <div className="drawer-content flex flex-1 overflow-hidden">
-          <CanvasHost
-            variant={selectedVariantData}
-            bottlenecks={bottlenecks}
-            variants={variants}
-            selectedVariants={selectedVariants}
-            onVariantSelect={handleVariantSelect}
-            showHappyPath={showHappyPath}
-            showBottlenecks={showBottlenecks}
-            resetLayoutTrigger={resetLayoutTrigger}
-            totalFlowData={totalFlowData}
-          />
-        </div>
-
+      {/* Main Layout */}
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar (Desktop) */}
         <LeftSidebar
           collapsed={sidebarCollapsed}
@@ -177,6 +153,19 @@ function App() {
           showBottlenecks={showBottlenecks}
           onBottlenecksToggle={setShowBottlenecks}
           onResetLayout={handleResetLayout}
+        />
+
+        {/* Main Canvas */}
+        <CanvasHost
+          variant={selectedVariantData}
+          bottlenecks={bottlenecks}
+          variants={variants}
+          selectedVariants={selectedVariants}
+          onVariantSelect={handleVariantSelect}
+          showHappyPath={showHappyPath}
+          showBottlenecks={showBottlenecks}
+          resetLayoutTrigger={resetLayoutTrigger}
+          totalFlowData={totalFlowData}
         />
       </div>
 
