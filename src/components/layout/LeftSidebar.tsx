@@ -28,9 +28,11 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
   onResetLayout
 }) => {
   return (
-    <aside className={`hidden lg:flex lg:flex-col border-r bg-base-100 transition-all duration-300 overflow-hidden ${
-      collapsed ? 'lg:w-16' : 'lg:w-72'
-    }`}>
+    <div className="drawer-side">
+      <label htmlFor="drawer-toggle" className="drawer-overlay"></label>
+      <aside className={`flex flex-col border-r bg-base-100 overflow-hidden min-h-full ${
+        collapsed ? 'w-16' : 'w-72'
+      }`}>
       {/* Sidebar Header with Collapse Toggle */}
       <div className="flex items-center justify-between p-4 border-b bg-base-200">
         {!collapsed && (
@@ -108,6 +110,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
           </div>
         )}
       </div>
-    </aside>
+      </aside>
+    </div>
   );
 };
