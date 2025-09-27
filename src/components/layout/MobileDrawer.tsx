@@ -88,7 +88,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
     <>
       {/* Backdrop overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        className="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -106,7 +106,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
         aria-labelledby="drawer-title"
       >
         {/* Drawer Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-base-200 rounded-t-lg">
+        <div className="modal-header flex items-center justify-between p-4 border-b border-base-300 bg-base-200 rounded-t-lg">
           <h2 id="drawer-title" className="text-lg font-semibold text-base-content">
             Process Controls
           </h2>
