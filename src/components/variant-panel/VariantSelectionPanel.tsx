@@ -8,12 +8,20 @@ interface VariantSelectionPanelProps {
   onVariantSelect: (variantId: string) => void;
   showHappyPath: boolean;
   onHappyPathToggle: (enabled: boolean) => void;
+  showBottlenecks: boolean;
+  onBottlenecksToggle: (enabled: boolean) => void;
+  onResetLayout: () => void;
 }
 
 export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
   variants,
   selectedVariants,
-  onVariantSelect
+  onVariantSelect,
+  showHappyPath,
+  onHappyPathToggle,
+  showBottlenecks,
+  onBottlenecksToggle,
+  onResetLayout
 }) => {
 
   console.log('VariantSelectionPanel: variants.length =', variants.length);
@@ -32,118 +40,98 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
   // Show loading state if no variants
   if (variants.length === 0) {
     return (
-      <div
-        style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          zIndex: 9999,
-          backgroundColor: 'white',
-          border: '2px solid #d1d5db',
-          borderRadius: '12px',
-          padding: '16px',
-          minWidth: '300px',
-          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
-        }}
-      >
-        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#374151', marginBottom: '8px' }}>
-          Process Variants
-        </div>
-        <div style={{ fontSize: '12px', color: '#6b7280', textAlign: 'center', padding: '20px 0' }}>
+      <div className="space-y-4">
+        <h2 className="text-sm font-medium text-base-content">Process Variants</h2>
+        <div className="text-sm text-base-content/60 text-center py-8">
           Loading variants...
         </div>
       </div>
     );
   }
 
-  // Show variants panel
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        zIndex: 9999,
-        backgroundColor: 'white',
-        border: '2px solid #d1d5db',
-        borderRadius: '12px',
-        padding: '16px',
-        minWidth: '360px',
-        maxWidth: '500px',
-        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
-      }}
-    >
-      {/* Header */}
-      <div style={{
-        fontSize: '14px',
-        fontWeight: 'bold',
-        color: '#374151',
-        marginBottom: '12px',
-        paddingBottom: '8px',
-        borderBottom: '1px solid #e5e7eb'
-      }}>
-        Top Variants ({variants.length})
+    <div className="space-y-4">
+      {/* Variants Header */}
+      <div>
+        <h2 className="text-sm font-medium text-base-content mb-3">
+          Process Variants ({variants.length})
+        </h2>
+
+        {/* Variant List */}
+        <div className="space-y-2">
+          {sortedVariants.map((variant) => {
+            const isSelected = selectedVariants.includes(variant.variant_id);
+            const percentage = ((variant.case_count / totalCases) * 100).toFixed(1);
+            const displayName = getVariantDisplayName(variant.variant_id);
+
+            return (
+              <label key={variant.variant_id} className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={isSelected}
+                  onChange={() => onVariantSelect(variant.variant_id)}
+                  aria-label={`Toggle variant ${displayName}`}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-base-content/60 min-w-[35px]">
+                      {percentage}%
+                    </span>
+                    <span className="text-sm font-medium text-base-content truncate">
+                      {displayName}
+                    </span>
+                  </div>
+                  <div className="text-xs text-base-content/60">
+                    {variant.case_count.toLocaleString()} cases
+                  </div>
+                </div>
+              </label>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Variant List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {sortedVariants.map((variant, index) => {
-          const isSelected = selectedVariants.includes(variant.variant_id);
-          const percentage = ((variant.case_count / totalCases) * 100).toFixed(1);
+      {/* Divider */}
+      <div className="divider my-4"></div>
 
-          return (
-            <div
-              key={variant.variant_id}
-              onClick={() => onVariantSelect(variant.variant_id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '8px 12px',
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb',
-                backgroundColor: isSelected ? '#eff6ff' : '#f9fafb',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                fontSize: '13px'
-              }}
-            >
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '20px',
-                height: '20px',
-                borderRadius: '4px',
-                fontSize: '10px',
-                fontWeight: 'bold',
-                backgroundColor: isSelected ? '#3b82f6' : '#d1d5db',
-                color: isSelected ? 'white' : '#374151'
-              }}>
-                {index + 1}
-              </span>
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  fontWeight: '500',
-                  color: isSelected ? '#1e40af' : '#374151',
-                  marginBottom: '2px'
-                }}>
-                  {getVariantDisplayName(variant.variant_id)}
-                </div>
-                <div style={{ fontSize: '11px', color: '#6b7280' }}>
-                  {variant.case_count.toLocaleString()} cases
-                </div>
-              </div>
-              <div style={{
-                fontWeight: 'bold',
-                color: isSelected ? '#1e40af' : '#374151'
-              }}>
-                {percentage}%
-              </div>
-            </div>
-          );
-        })}
+      {/* Controls Section */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium text-base-content">Display Options</h3>
+
+        {/* Happy Path Toggle */}
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="checkbox checkbox-sm"
+            checked={showHappyPath}
+            onChange={(e) => onHappyPathToggle(e.target.checked)}
+            aria-label="Toggle happy path display"
+          />
+          <span className="text-sm text-base-content">Happy Path</span>
+        </label>
+
+        {/* Bottlenecks Toggle */}
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="checkbox checkbox-sm"
+            checked={showBottlenecks}
+            onChange={(e) => onBottlenecksToggle(e.target.checked)}
+            aria-label="Toggle bottlenecks display"
+          />
+          <span className="text-sm text-base-content">Bottlenecks</span>
+        </label>
       </div>
+
+      {/* Reset Layout Button */}
+      <button
+        className="btn btn-outline w-full mt-4"
+        onClick={onResetLayout}
+        aria-label="Reset layout"
+      >
+        Reset Layout
+      </button>
     </div>
   );
 };
