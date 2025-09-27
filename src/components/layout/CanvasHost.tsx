@@ -35,7 +35,7 @@ export const CanvasHost: React.FC<CanvasHostProps> = ({
   showFloatingToolbar = false
 }) => {
   return (
-    <main id="canvasHost" className="flex-1 relative bg-white">
+    <main id="canvasHost" className="flex-1 relative bg-base-100">
       {/* Main diagram container */}
       <div id="diagramContainer" className="w-full h-full p-4 md:p-6">
         <ErrorBoundary>
