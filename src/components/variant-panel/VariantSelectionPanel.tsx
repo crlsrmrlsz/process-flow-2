@@ -65,41 +65,28 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             const displayName = getVariantDisplayName(variant.variant_id);
 
             return (
-              <div
-                key={variant.variant_id}
-                className={`card card-compact transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? 'bg-primary/10 border-primary shadow-sm'
-                    : 'bg-base-100 border-base-300 hover:bg-base-200'
-                } border`}
-                onClick={() => onVariantSelect(variant.variant_id)}
-              >
-                <div className="card-body">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-sm checkbox-primary"
-                      checked={isSelected}
-                      onChange={() => onVariantSelect(variant.variant_id)}
-                      aria-label={`Toggle variant ${displayName}`}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="badge badge-outline badge-sm font-bold">
-                          {percentage}%
-                        </div>
-                        <span className="text-sm font-medium text-base-content truncate">
-                          {displayName}
-                        </span>
-                      </div>
-                      <div className="text-xs text-base-content/60">
-                        {variant.case_count.toLocaleString()} cases
-                      </div>
-                    </div>
+              <label key={variant.variant_id} className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={isSelected}
+                  onChange={() => onVariantSelect(variant.variant_id)}
+                  aria-label={`Toggle variant ${displayName}`}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-base-content/60 min-w-[35px]">
+                      {percentage}%
+                    </span>
+                    <span className="text-sm font-medium text-base-content truncate">
+                      {displayName}
+                    </span>
+                  </div>
+                  <div className="text-xs text-base-content/60">
+                    {variant.case_count.toLocaleString()} cases
                   </div>
                 </div>
-              </div>
+              </label>
             );
           })}
         </div>
