@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import test file to force DaisyUI component inclusion */
+@import './test-daisyui.css';
+
 /* Ensure full height cascade */
 html, body, #root {
   height: 100%;

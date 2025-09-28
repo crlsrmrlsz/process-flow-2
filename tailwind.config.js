@@ -10,5 +10,17 @@ export default {
   plugins: [require('daisyui')],
   daisyui: {
     themes: ['light'],
+    base: true,
+    styled: true,
+    utils: true,
   },
+  safelist: [
+    'checkbox',
+    'checkbox-sm',
+    'checkbox-primary',
+    'btn',
+    'btn-ghost',
+    'btn-square',
+    'btn-sm'
+  ]
 }
