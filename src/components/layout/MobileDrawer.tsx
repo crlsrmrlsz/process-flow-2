@@ -82,35 +82,43 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
     return () => drawer.removeEventListener('keydown', handleTabKey);
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* DaisyUI Modal Backdrop */}
-      <div
-        className={`modal modal-open lg:hidden ${isOpen ? 'modal-open' : ''}`}
-        onClick={onClose}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="drawer-title"
-      >
-        {/* DaisyUI Modal Box with Custom Drawer Positioning */}
-        <div
+    <div className="drawer lg:hidden">
+      {/* Hidden checkbox for drawer state - controlled by parent */}
+      <input
+        id="mobile-drawer-toggle"
+        type="checkbox"
+        className="drawer-toggle"
+        checked={isOpen}
+        readOnly
+      />
+
+      {/* Drawer content (empty - main content is in parent) */}
+      <div className="drawer-content">
+        {/* Empty - this drawer is an overlay */}
+      </div>
+
+      {/* Drawer side panel */}
+      <div className="drawer-side z-50">
+        {/* Backdrop overlay */}
+        <label
+          htmlFor="mobile-drawer-toggle"
+          className="drawer-overlay"
+          onClick={onClose}
+          aria-label="Close drawer"
+        ></label>
+
+        {/* Drawer panel */}
+        <aside
           id="mobile-controls"
           ref={drawerRef}
-          className={`modal-box w-full max-w-none rounded-t-lg rounded-b-none p-0 max-h-[85vh] fixed bottom-0 left-0 right-0 transform transition-transform duration-300 ${
-            isOpen ? 'translate-y-0' : 'translate-y-full'
-          }`}
-          onClick={(e) => e.stopPropagation()}
-          aria-hidden={!isOpen}
+          className="min-h-full w-80 bg-base-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="drawer-title"
         >
-          {/* Pull indicator */}
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="w-8 h-1 bg-base-300 rounded-full"></div>
-          </div>
-
-          {/* Modal Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-base-200 rounded-t-lg">
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between p-4 border-b bg-base-200">
             <h2 id="drawer-title" className="text-lg font-semibold text-base-content">
               Process Controls
             </h2>
@@ -126,8 +134,8 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             </button>
           </div>
 
-          {/* Modal Content */}
-          <div className="p-4 overflow-auto max-h-[calc(85vh-4rem)]">
+          {/* Drawer Content */}
+          <div className="p-4 overflow-auto">
             <VariantSelectionPanel
               variants={variants}
               selectedVariants={selectedVariants}
@@ -139,8 +147,8 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
               onResetLayout={onResetLayout}
             />
           </div>
-        </div>
+        </aside>
       </div>
-    </>
+    </div>
   );
 };

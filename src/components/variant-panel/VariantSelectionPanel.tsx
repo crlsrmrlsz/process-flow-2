@@ -51,11 +51,11 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Variants Header */}
-      <div>
-        <h2 className="text-sm font-medium text-base-content mb-3">
+      {/* Process Variants Fieldset */}
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium text-base-content">
           Process Variants ({variants.length})
-        </h2>
+        </legend>
 
         {/* Variant List */}
         <div className="space-y-2">
@@ -90,14 +90,14 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             );
           })}
         </div>
-      </div>
+      </fieldset>
 
       {/* Divider */}
       <div className="divider my-4"></div>
 
-      {/* Controls Section */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium text-base-content">Display Options</h3>
+      {/* Analysis Fieldset */}
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium text-base-content">Analysis</legend>
 
         {/* Happy Path Toggle */}
         <label className="flex items-center gap-3 cursor-pointer">
@@ -122,7 +122,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
           />
           <span className="text-sm text-base-content">Bottlenecks</span>
         </label>
-      </div>
+      </fieldset>
 
       {/* Reset Layout Button */}
       <button

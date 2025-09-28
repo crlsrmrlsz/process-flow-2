@@ -33,8 +33,10 @@ export default {
     'badge',
     'badge-primary',
     'badge-sm',
-    'modal',
-    'modal-box',
-    'modal-open'
+    'drawer',
+    'drawer-toggle',
+    'drawer-content',
+    'drawer-side',
+    'drawer-overlay'
   ]
 }
