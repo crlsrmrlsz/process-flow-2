@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Direct DaisyUI imports to force inclusion - must come before @tailwind */
+@import 'daisyui/themes.css';
+@import 'daisyui/daisyui.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import test file to force DaisyUI component inclusion */
-@import './test-daisyui.css';
 
 /* Ensure full height cascade */
 html, body, #root {
