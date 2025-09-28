@@ -52,7 +52,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
   return (
     <div className="space-y-4">
       {/* Process Variants Fieldset */}
-      <fieldset className="space-y-3">
+      <fieldset className="border border-base-300 rounded-lg p-4 space-y-3">
         <legend className="text-[11px] font-medium text-base-content">
           Process Variants ({variants.length})
         </legend>
@@ -92,11 +92,8 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
         </div>
       </fieldset>
 
-      {/* Divider */}
-      <div className="divider my-4"></div>
-
       {/* Analysis Fieldset */}
-      <fieldset className="space-y-3">
+      <fieldset className="border border-base-300 rounded-lg p-4 space-y-3">
         <legend className="text-[11px] font-medium text-base-content">Analysis</legend>
 
         {/* Happy Path Toggle */}
@@ -108,7 +105,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             onChange={(e) => onHappyPathToggle(e.target.checked)}
             aria-label="Toggle happy path display"
           />
-          <span className="text-[11px] text-base-content">Happy Path</span>
+          <span className="text-[11px] text-base-content/60">Happy Path</span>
         </label>
 
         {/* Bottlenecks Toggle */}
@@ -120,13 +117,13 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             onChange={(e) => onBottlenecksToggle(e.target.checked)}
             aria-label="Toggle bottlenecks display"
           />
-          <span className="text-[11px] text-base-content">Bottlenecks</span>
+          <span className="text-[11px] text-base-content/60">Bottlenecks</span>
         </label>
       </fieldset>
 
       {/* Reset Layout Button */}
       <button
-        className="btn btn-outline w-full mt-4"
+        className="btn btn-sm btn-outline mt-4 text-base-content/60"
         onClick={onResetLayout}
         aria-label="Reset layout"
       >

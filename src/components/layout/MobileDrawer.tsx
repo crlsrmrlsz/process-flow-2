@@ -108,46 +108,50 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           aria-label="Close drawer"
         ></label>
 
-        {/* Drawer panel */}
-        <aside
+        {/* Drawer panel - using DaisyUI menu structure */}
+        <ul
           id="mobile-controls"
           ref={drawerRef}
-          className="min-h-full w-80 bg-base-200"
+          className="menu bg-base-200 text-base-content min-h-full w-96 p-6"
           role="dialog"
           aria-modal="true"
           aria-labelledby="drawer-title"
         >
           {/* Drawer Header */}
-          <div className="flex items-center justify-between p-6 border-b bg-base-200">
-            <h2 id="drawer-title" className="text-base font-semibold text-base-content">
-              Process Controls
-            </h2>
-            <button
-              ref={firstElementRef}
-              className="btn btn-ghost btn-square btn-sm"
-              onClick={onClose}
-              aria-label="Close controls"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+          <li>
+            <div className="flex items-center justify-between mb-6 border-b pb-4">
+              <h2 id="drawer-title" className="text-base font-semibold text-base-content">
+                Process Controls
+              </h2>
+              <button
+                ref={firstElementRef}
+                className="btn btn-ghost btn-square btn-sm"
+                onClick={onClose}
+                aria-label="Collapse drawer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </li>
 
           {/* Drawer Content */}
-          <div className="px-8 py-6 overflow-auto">
-            <VariantSelectionPanel
-              variants={variants}
-              selectedVariants={selectedVariants}
-              onVariantSelect={onVariantSelect}
-              showHappyPath={showHappyPath}
-              onHappyPathToggle={onHappyPathToggle}
-              showBottlenecks={showBottlenecks}
-              onBottlenecksToggle={onBottlenecksToggle}
-              onResetLayout={onResetLayout}
-            />
-          </div>
-        </aside>
+          <li>
+            <div>
+              <VariantSelectionPanel
+                variants={variants}
+                selectedVariants={selectedVariants}
+                onVariantSelect={onVariantSelect}
+                showHappyPath={showHappyPath}
+                onHappyPathToggle={onHappyPathToggle}
+                showBottlenecks={showBottlenecks}
+                onBottlenecksToggle={onBottlenecksToggle}
+                onResetLayout={onResetLayout}
+              />
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   );
