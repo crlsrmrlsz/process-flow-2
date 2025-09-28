@@ -15,6 +15,7 @@ export default {
     utils: true,
   },
   safelist: [
+    // DaisyUI Components
     'checkbox',
     'checkbox-sm',
     'checkbox-primary',
@@ -37,6 +38,8 @@ export default {
     'drawer-toggle',
     'drawer-content',
     'drawer-side',
-    'drawer-overlay'
+    'drawer-overlay',
+    // Custom Utilities
+    'text-[11px]'
   ]
 }

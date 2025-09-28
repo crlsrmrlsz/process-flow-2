@@ -17,7 +17,7 @@ function App() {
   const [resetLayoutTrigger, setResetLayoutTrigger] = useState(0);
 
   // Layout state
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
 

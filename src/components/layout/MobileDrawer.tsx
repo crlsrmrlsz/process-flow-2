@@ -100,10 +100,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
       {/* Drawer side panel */}
       <div className="drawer-side z-50">
-        {/* Backdrop overlay */}
+        {/* Transparent backdrop overlay - maintains click-to-close without shading */}
         <label
           htmlFor="mobile-drawer-toggle"
-          className="drawer-overlay"
+          className="drawer-overlay bg-transparent"
           onClick={onClose}
           aria-label="Close drawer"
         ></label>
@@ -118,8 +118,8 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           aria-labelledby="drawer-title"
         >
           {/* Drawer Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-base-200">
-            <h2 id="drawer-title" className="text-lg font-semibold text-base-content">
+          <div className="flex items-center justify-between p-6 border-b bg-base-200">
+            <h2 id="drawer-title" className="text-base font-semibold text-base-content">
               Process Controls
             </h2>
             <button
@@ -135,7 +135,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           </div>
 
           {/* Drawer Content */}
-          <div className="p-4 overflow-auto">
+          <div className="p-6 overflow-auto">
             <VariantSelectionPanel
               variants={variants}
               selectedVariants={selectedVariants}

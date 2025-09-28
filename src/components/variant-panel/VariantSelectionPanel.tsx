@@ -53,7 +53,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
     <div className="space-y-4">
       {/* Process Variants Fieldset */}
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-base-content">
+        <legend className="text-xs font-medium text-base-content">
           Process Variants ({variants.length})
         </legend>
 
@@ -75,14 +75,14 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-base-content/60 min-w-[35px]">
+                    <span className="text-[11px] font-bold text-base-content/60 min-w-[35px]">
                       {percentage}%
                     </span>
-                    <span className="text-sm font-medium text-base-content truncate">
+                    <span className="text-xs font-medium text-base-content truncate">
                       {displayName}
                     </span>
                   </div>
-                  <div className="text-xs text-base-content/60">
+                  <div className="text-[11px] text-base-content/60">
                     {variant.case_count.toLocaleString()} cases
                   </div>
                 </div>
@@ -97,7 +97,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
 
       {/* Analysis Fieldset */}
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-base-content">Analysis</legend>
+        <legend className="text-xs font-medium text-base-content">Analysis</legend>
 
         {/* Happy Path Toggle */}
         <label className="flex items-center gap-3 cursor-pointer">
@@ -108,7 +108,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             onChange={(e) => onHappyPathToggle(e.target.checked)}
             aria-label="Toggle happy path display"
           />
-          <span className="text-sm text-base-content">Happy Path</span>
+          <span className="text-xs text-base-content">Happy Path</span>
         </label>
 
         {/* Bottlenecks Toggle */}
@@ -120,7 +120,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             onChange={(e) => onBottlenecksToggle(e.target.checked)}
             aria-label="Toggle bottlenecks display"
           />
-          <span className="text-sm text-base-content">Bottlenecks</span>
+          <span className="text-xs text-base-content">Bottlenecks</span>
         </label>
       </fieldset>
 
