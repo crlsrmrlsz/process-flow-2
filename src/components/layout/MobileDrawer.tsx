@@ -135,7 +135,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           </div>
 
           {/* Drawer Content */}
-          <div className="p-6 overflow-auto">
+          <div className="px-8 py-6 overflow-auto">
             <VariantSelectionPanel
               variants={variants}
               selectedVariants={selectedVariants}

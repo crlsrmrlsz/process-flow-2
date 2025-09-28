@@ -53,7 +53,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
     <div className="space-y-4">
       {/* Process Variants Fieldset */}
       <fieldset className="space-y-3">
-        <legend className="text-xs font-medium text-base-content">
+        <legend className="text-[11px] font-medium text-base-content">
           Process Variants ({variants.length})
         </legend>
 
@@ -78,7 +78,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
                     <span className="text-[11px] font-bold text-base-content/60 min-w-[35px]">
                       {percentage}%
                     </span>
-                    <span className="text-xs font-medium text-base-content truncate">
+                    <span className="text-[11px] font-medium text-base-content/60 truncate">
                       {displayName}
                     </span>
                   </div>
@@ -97,7 +97,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
 
       {/* Analysis Fieldset */}
       <fieldset className="space-y-3">
-        <legend className="text-xs font-medium text-base-content">Analysis</legend>
+        <legend className="text-[11px] font-medium text-base-content">Analysis</legend>
 
         {/* Happy Path Toggle */}
         <label className="flex items-center gap-3 cursor-pointer">
@@ -108,7 +108,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             onChange={(e) => onHappyPathToggle(e.target.checked)}
             aria-label="Toggle happy path display"
           />
-          <span className="text-xs text-base-content">Happy Path</span>
+          <span className="text-[11px] text-base-content">Happy Path</span>
         </label>
 
         {/* Bottlenecks Toggle */}
@@ -120,7 +120,7 @@ export const VariantSelectionPanel: React.FC<VariantSelectionPanelProps> = ({
             onChange={(e) => onBottlenecksToggle(e.target.checked)}
             aria-label="Toggle bottlenecks display"
           />
-          <span className="text-xs text-base-content">Bottlenecks</span>
+          <span className="text-[11px] text-base-content">Bottlenecks</span>
         </label>
       </fieldset>
 
