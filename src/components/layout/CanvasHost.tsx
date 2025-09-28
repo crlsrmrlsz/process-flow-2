@@ -58,7 +58,7 @@ export const CanvasHost: React.FC<CanvasHostProps> = ({
         <div className="absolute right-4 top-24 flex flex-col gap-2 z-50">
           {onZoomIn && (
             <button
-              className="btn btn-square btn-sm shadow-lg"
+              className="btn btn-primary btn-square btn-sm shadow-lg"
               onClick={onZoomIn}
               aria-label="Zoom in"
             >
@@ -69,7 +69,7 @@ export const CanvasHost: React.FC<CanvasHostProps> = ({
           )}
           {onZoomOut && (
             <button
-              className="btn btn-square btn-sm shadow-lg"
+              className="btn btn-secondary btn-square btn-sm shadow-lg"
               onClick={onZoomOut}
               aria-label="Zoom out"
             >
@@ -80,7 +80,7 @@ export const CanvasHost: React.FC<CanvasHostProps> = ({
           )}
           {onFit && (
             <button
-              className="btn btn-square btn-sm shadow-lg"
+              className="btn btn-accent btn-square btn-sm shadow-lg"
               onClick={onFit}
               aria-label="Fit view"
             >

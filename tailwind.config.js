@@ -21,6 +21,20 @@ export default {
     'btn',
     'btn-ghost',
     'btn-square',
-    'btn-sm'
+    'btn-sm',
+    'btn-primary',
+    'btn-secondary',
+    'btn-accent',
+    'btn-outline',
+    'card',
+    'card-bordered',
+    'card-body',
+    'card-title',
+    'badge',
+    'badge-primary',
+    'badge-sm',
+    'modal',
+    'modal-box',
+    'modal-open'
   ]
 }

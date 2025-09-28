@@ -53,13 +53,13 @@ export const VariantTile: React.FC<VariantTileProps> = ({ variant, isSelected, o
     );
   };
 
-  // Get color scheme based on variant type
-  const getColorScheme = () => {
-    if (variant.variant_id.includes('happy')) return 'border-green-200 bg-green-50 hover:bg-green-100';
-    if (variant.variant_id.includes('info')) return 'border-blue-200 bg-blue-50 hover:bg-blue-100';
-    if (variant.variant_id.includes('rejected')) return 'border-red-200 bg-red-50 hover:bg-red-100';
-    if (variant.variant_id.includes('withdrawn')) return 'border-yellow-200 bg-yellow-50 hover:bg-yellow-100';
-    return 'border-gray-200 bg-gray-50 hover:bg-gray-100';
+  // Get DaisyUI card variant based on variant type
+  const getCardVariant = () => {
+    if (variant.variant_id.includes('happy')) return 'card-success';
+    if (variant.variant_id.includes('info')) return 'card-info';
+    if (variant.variant_id.includes('rejected')) return 'card-error';
+    if (variant.variant_id.includes('withdrawn')) return 'card-warning';
+    return '';
   };
 
   const percentage = ((variant.case_count / (variant.case_count + 100)) * 100).toFixed(1); // Approximate for display
@@ -67,29 +67,29 @@ export const VariantTile: React.FC<VariantTileProps> = ({ variant, isSelected, o
   return (
     <button
       onClick={onSelect}
-      className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+      className={`card w-full text-left transition-all hover:shadow-lg ${
         isSelected
-          ? 'border-blue-500 bg-blue-100 shadow-md ring-2 ring-blue-200'
-          : `${getColorScheme()} shadow-sm hover:shadow-md`
+          ? 'card-bordered border-primary bg-primary/10 shadow-lg'
+          : `card-bordered bg-base-100 hover:bg-base-200 shadow-md ${getCardVariant()}`
       }`}
     >
-      <div className="space-y-2">
+      <div className="card-body p-3 space-y-2">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h4 className={`font-medium text-sm ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>
+          <h4 className={`card-title text-sm ${isSelected ? 'text-primary' : 'text-base-content'}`}>
             {getVariantName()}
           </h4>
           {isSelected && (
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="badge badge-primary badge-sm"></div>
           )}
         </div>
 
         {/* Case count */}
         <div className="flex items-center justify-between text-xs">
-          <span className={isSelected ? 'text-blue-700' : 'text-gray-600'}>
+          <span className={isSelected ? 'text-primary' : 'text-base-content/70'}>
             {variant.case_count} cases
           </span>
-          <span className={`font-mono ${isSelected ? 'text-blue-700' : 'text-gray-600'}`}>
+          <span className={`font-mono ${isSelected ? 'text-primary' : 'text-base-content/70'}`}>
             {percentage}%
           </span>
         </div>
@@ -106,12 +106,12 @@ export const VariantTile: React.FC<VariantTileProps> = ({ variant, isSelected, o
               <div
                 key={index}
                 className={`w-1 h-1 rounded-full ${
-                  isSelected ? 'bg-blue-400' : 'bg-gray-400'
+                  isSelected ? 'bg-primary' : 'bg-base-content/40'
                 }`}
               />
             ))}
             {variant.sequence.length > 6 && (
-              <span className={`text-xs ml-1 ${isSelected ? 'text-blue-700' : 'text-gray-500'}`}>
+              <span className={`text-xs ml-1 ${isSelected ? 'text-primary' : 'text-base-content/60'}`}>
                 +{variant.sequence.length - 6}
               </span>
             )}
@@ -120,7 +120,7 @@ export const VariantTile: React.FC<VariantTileProps> = ({ variant, isSelected, o
 
         {/* Duration indicator */}
         <div className="text-center">
-          <span className={`text-xs font-mono ${isSelected ? 'text-blue-600' : 'text-gray-500'}`}>
+          <span className={`text-xs font-mono ${isSelected ? 'text-primary' : 'text-base-content/60'}`}>
             ~{variant.total_median_hours.toFixed(0)}h median
           </span>
         </div>
